@@ -1,0 +1,8 @@
+.bmx
+*.bak
+*.i
+*.i2
+*.a
+*.exe
+
+glfwopengl.mod/_out_/
