@@ -19,3 +19,17 @@
 '    3. This notice may not be removed or altered from any source
 '    distribution.
 '
+SuperStrict
+
+Extern
+
+	Function bmx_glfw_glfwGetMonitors:Byte Ptr Ptr(count:Int Var)="glfwGetMonitors"
+	Function bmx_glfw_glfwGetPrimaryMonitor:Byte Ptr()="glfwGetPrimaryMonitor"
+	Function bmx_glfw_glfwSetGamma(monitor:Byte Ptr, Gamma:Float)="glfwSetGamma"
+	Function bmx_glfw_glfwGetMonitorPos(monitor:Byte Ptr, x:Int Var, y:Int Var)="glfwGetMonitorPos"
+	Function bmx_glfw_glfwGetMonitorWorkarea(monitor:Byte Ptr, x:Int Var, y:Int Var, width:Int Var, height:Int Var)="glfwGetMonitorWorkarea"
+	Function bmx_glfw_glfwGetMonitorPhysicalSize(monitor:Byte Ptr, widthMM:Int Var, heightMM:Int Var)="glfwGetMonitorPhysicalSize"
+	Function bmx_glfw_glfwGetMonitorContentScale(monitor:Byte Ptr, xscale:Float Var, yscale:Float Var)="glfwGetMonitorContentScale"
+	Function bmx_glfw_glfwGetMonitorName:Byte Ptr(monitor:Byte Ptr)="glfwGetMonitorName"
+
+End Extern

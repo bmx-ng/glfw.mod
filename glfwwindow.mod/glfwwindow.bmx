@@ -36,21 +36,39 @@ Type TGLFWWindow
 	Field windowPtr:Byte Ptr
 
 	Rem
-	bbdoc: 
+	bbdoc: Resets all window hints to their default values.
 	End Rem
 	Function DefaultHints()
 		bmx_glfw_glfwDefaultWindowHints()
 	End Function
 	
 	Rem
-	bbdoc: 
+	bbdoc: Sets hints for the next call to #Create.
+	about: The hints, once set, retain their values until changed by a call to this function or #DefaultHints, or until the library is terminated.
+
+	Only integer value hints can be set with this function. String value hints are set with #HintString.
+
+	This function does not check whether the specified hint values are valid. If you set hints to invalid values this will
+	instead be reported by the next call to #Create.
+
+	Some hints are platform specific. These may be set on any platform but they will only affect their specific platform.
+	Other platforms will ignore them. Setting these hints requires no platform specific headers or functions.
 	End Rem
 	Function Hint(hint:Int, value:Int)
 		bmx_glfw_glfwWindowHint(hint, value)
 	End Function
 	
 	Rem
-	bbdoc: 
+	bbdoc: Sets hints for the next call to #Create.
+	about: The hints, once set, retain their values until changed by a call to this function or #DefaultHints, or until the library is terminated.
+
+	Only #String type hints can be set with this function. Integer value hints are set with #Hint.
+
+	This function does not check whether the specified hint values are valid. If you set hints to invalid values this will
+	instead be reported by the next call to #Create.
+
+	Some hints are platform specific. These may be set on any platform but they will only affect their specific platform.
+	Other platforms will ignore them. Setting these hints requires no platform specific headers or functions.
 	End Rem
 	Function HintString(hint:Int, value:String)
 		Local v:Byte Ptr = value.ToUTF8String()
@@ -271,10 +289,32 @@ Type TGLFWWindow
 		bmx_glfw_glfwRequestWindowAttention(windowPtr)
 	End Method
 	
+	Rem
+	bbdoc: Returns the monitor that the specified window is in full screen on.
+	End Rem
 	Method GetMonitor:TGLFWMonitor()
+		Return TGLFWMonitor._create(bmx_glfw_glfwGetWindowMonitor(windowPtr))
 	End Method
 	
+	Rem
+	bbdoc: Sets the monitor that the window uses for full screen mode or, if the monitor is #Null, makes it windowed mode.
+	about: When setting a monitor, this method updates the width, height and refresh rate of the desired video mode and switches
+	to the video mode closest to it. The window position is ignored when setting a monitor.
+
+	When the monitor is #Null, the position, width and height are used to place the window content area. The refresh rate
+	is ignored when no monitor is specified.
+
+	If you only wish to update the resolution of a full screen window or the size of a windowed mode window, see #SetSize.
+
+	When a window transitions from full screen to windowed mode, this method restores any previous window settings such as whether
+	it is decorated, floating, resizable, has size or aspect ratio limits, etc.
+	End Rem
 	Method SetMonitor(monitor:TGLFWMonitor, xpos:Int, ypos:Int, width:Int, height:Int, refreshRate:Int)
+		If monitor Then
+			bmx_glfw_glfwSetWindowMonitor(windowPtr, monitor.monitorPtr, xpos, ypos, width, height, refreshRate)
+		Else
+			bmx_glfw_glfwSetWindowMonitor(windowPtr, Null, xpos, ypos, width, height, refreshRate)
+		End If
 	End Method
 	
 	Rem

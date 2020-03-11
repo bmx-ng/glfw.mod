@@ -54,8 +54,9 @@ Extern
 	Function bmx_glfw_glfwRequestWindowAttention(window:Byte Ptr)="glfwRequestWindowAttention"
 	Function bmx_glfw_glfwGetWindowAttrib:Int(window:Byte Ptr, attrib:Int)="glfwGetWindowAttrib"
 	Function bmx_glfw_glfwSetWindowAttrib(window:Byte Ptr, attrib:Int, value:Int)="glfwSetWindowAttrib"
+	Function bmx_glfw_glfwGetWindowMonitor:Byte Ptr(window:Byte Ptr)="glfwGetWindowMonitor"
+	Function bmx_glfw_glfwSetWindowMonitor(window:Byte Ptr, monitor:Byte Ptr, xpos:Int, ypos:Int, width:Int, height:Int, refreshRate:Int)="glfwSetWindowMonitor"
 
-	
 	Function bmx_glfw_glfwMakeContextCurrent(window:Byte Ptr)="glfwMakeContextCurrent"
 	Function bmx_glfw_glfwSwapBuffers(window:Byte Ptr)="glfwSwapBuffers"
 	
