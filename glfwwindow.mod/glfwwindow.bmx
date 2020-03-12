@@ -156,8 +156,42 @@ Type TGLFWWindow
 		MemFree(t)
 	End Method
 	
-	'Method SetIcon()
-	'End Method
+	Rem
+	bbdoc: Sets the icon for the window.
+	about: If passed an array of candidate pixmaps, those of or closest to the sizes desired by the system are
+	selected.  If no images are specified, the window reverts to its default icon.
+
+	The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight bits per channel with the red channel first.
+	They are arranged canonically as packed sequential rows, starting from the top-left corner.
+
+	The desired image sizes varies depending on platform and system settings.
+	The selected images will be rescaled as needed.  Good sizes include 16x16, 32x32 and 48x48.
+	
+	> On macOS the GLFW window has no icon, as it is not a document window, so this method does nothing.  The dock icon will be the same as the application bundle's icon.
+	
+	> On Wayland there is no existing protocol to change an icon, the window will thus inherit the one defined in the application's desktop file. This method always emits #GLFW_PLATFORM_ERROR.
+	End Rem
+	Method SetIcon(pixmaps:TPixmap[])
+		If pixmaps.length = 0 Then
+			bmx_glfw_glfwSetWindowIcon(windowPtr, 0, Null)
+		Else
+			Local images:SGLFWimage[pixmaps.length]
+			
+			Local pixs:TPixmap[pixmaps.length] ' cache
+			For Local i:Int = 0 Until pixmaps.length
+				Local pix:TPixmap = pixmaps[i]
+				If pix.format <> PF_RGBA8888 Then
+					pix = pix.Convert(PF_RGBA8888)
+				End If
+				pixs[i] = pix
+				
+				images[i] = New SGLFWimage(pix.width, pix.height, pix.pixels)
+			Next
+			
+			bmx_glfw_glfwSetWindowIcon(windowPtr, pixmaps.length, images)
+			pixs = Null ' refer to cache - prevent compiler optimizing it away because we don't reference it otherwise after the loop
+		End If
+	End Method
 	
 	Rem
 	bbdoc: Retrieves the position, in screen coordinates, of the upper-left corner of the content area of the window.
@@ -648,6 +682,32 @@ Private
 	End Function
 
 End Type
+
+Rem
+bbdoc: Image data.
+about: This describes a single 2D image.
+See the documentation for each related function what the expected pixel format is.
+End Rem
+Struct SGLFWimage
+	Rem
+	bbdoc: The width, in pixels, of this image.
+	End Rem
+	Field width:Int
+	Rem
+	bbdoc: The height, in pixels, of this image.
+	End Rem
+	Field height:Int
+	Rem
+	bbdoc: The pixel data of this image, arranged left-to-right, top-to-bottom.
+	End Rem
+	Field pixels:Byte Ptr
+	
+	Method New(width:Int, height:Int, pixels:Byte Ptr)
+		Self.width = width
+		Self.height = height
+		Self.pixels = pixels
+	End Method
+End Struct
 
 Private
 
