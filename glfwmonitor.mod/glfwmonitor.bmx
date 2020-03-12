@@ -66,14 +66,14 @@ Type TGLFWMonitor
 	End Function
 	
 	Rem
-	bbdoc: Returns the position, in screen coordinates, of the upper-left corner of the specified monitor.
+	bbdoc: Returns the position, in screen coordinates, of the upper-left corner of the monitor.
 	End Rem
 	Method GetPos(x:Int Var, y:Int Var)
 		bmx_glfw_glfwGetMonitorPos(monitorPtr, x, y)
 	End Method
 	
 	Rem
-	bbdoc: Returns the position, in screen coordinates, of the upper-left corner of the work area of the specified monitor along with the work area size in screen coordinates.
+	bbdoc: Returns the position, in screen coordinates, of the upper-left corner of the work area of the monitor along with the work area size in screen coordinates.
 	about: The work area is defined as the area of the monitor not occluded by the operating system task bar where present.
 	If no task bar exists then the work area is the monitor resolution in screen coordinates.
 	End Rem
@@ -82,7 +82,7 @@ Type TGLFWMonitor
 	End Method
 	
 	Rem
-	bbdoc: Returns the size, in millimetres, of the display area of the specified monitor.
+	bbdoc: Returns the size, in millimetres, of the display area of the monitor.
 	about: Some systems do not provide accurate monitor size information, either because the monitor EDID data is incorrect
 	or because the driver does not report it accurately.
 	End Rem
@@ -91,7 +91,7 @@ Type TGLFWMonitor
 	End Method
 	
 	Rem
-	bbdoc: Retrieves the content scale for the specified monitor.
+	bbdoc: Retrieves the content scale for the monitor.
 	about: The content scale is the ratio between the current DPI and the platform's default DPI. This is especially
 	important for text and any UI elements. If the pixel dimensions of your UI scaled by this look appropriate on your
 	machine then it should appear at a reasonable size on other machines regardless of their DPI and scaling settings.
@@ -114,7 +114,7 @@ Type TGLFWMonitor
 	End Method
 	
 	Rem
-	bbdoc: Returns an array of all video modes supported by the specified monitor.
+	bbdoc: Returns an array of all video modes supported by the monitor.
 	about: The returned array is sorted in ascending order, first by color bit depth (the sum of all channel depths) and
 	then by resolution area (the product of width and height).
 	End Rem
@@ -129,7 +129,7 @@ Type TGLFWMonitor
 	End Method
 	
 	Rem
-	bbdoc: Returns the current video mode of the specified monitor.
+	bbdoc: Returns the current video mode of the monitor.
 	about: If you have created a full screen window for that monitor, the return value will depend on whether that window is iconified.
 	End Rem
 	Method GetVideoMode:SGLFWvidmode()
@@ -152,14 +152,20 @@ Type TGLFWMonitor
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Returns the current gamma ramp of the monitor.
 	End Rem
 	Method GetGammaRamp:SGLFWgammaramp()
 		Return bmx_glfw_glfwGetGammaRamp(monitorPtr)[0]
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Sets the current gamma ramp for the monitor.
+	about: The original gamma ramp for that monitor is saved by GLFW the first time this method is called and is restored by glfwTerminate.
+
+	The software controlled gamma ramp is applied in addition to the hardware gamma correction, which today is usually an approximation
+	of sRGB gamma. This means that setting a perfectly linear ramp, or gamma 1.0, will produce the default (usually sRGB-like) behavior.
+
+	For gamma correct rendering with OpenGL or OpenGL ES, see the GLFW_SRGB_CAPABLE hint.
 	End Rem
 	Method SetGammaRamp(ramp:SGLFWgammaramp)
 		bmx_glfw_glfwSetGammaRamp(monitorPtr, Varptr ramp)

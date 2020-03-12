@@ -408,7 +408,15 @@ Type TGLFWWindow
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Makes the OpenGL or OpenGL ES context of the window current on the calling thread.
+	about: A context must only be made current on a single thread at a time and each thread can have only a single current context at a time.
+
+	When moving a context between threads, you must make it non-current on the old thread before making it current on the new one.
+
+	By default, making a context non-current implicitly forces a pipeline flush. On machines that support
+	GL_KHR_context_flush_control, you can control whether a context performs this flush by setting the GLFW_CONTEXT_RELEASE_BEHAVIOR hint.
+
+	The window must have an OpenGL or OpenGL ES context. A window without a context will generate a GLFW_NO_WINDOW_CONTEXT error.
 	End Rem
 	Method MakeContextCurrent()
 		bmx_glfw_glfwMakeContextCurrent(windowPtr)
