@@ -21,6 +21,11 @@
 '
 SuperStrict
 
+?linux
+Import "-ldl"
+Import "-lX11"
+?
+
 Import "source.bmx"
 
 Extern
