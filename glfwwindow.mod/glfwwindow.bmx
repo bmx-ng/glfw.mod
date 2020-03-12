@@ -123,7 +123,10 @@ Type TGLFWWindow
 	End Method
 
 	Rem
-	bbdoc: 
+	bbdoc: Destroys the window and its context.
+	about: On calling this method, no further callbacks will be called for that window.
+
+	If the context of the window is current on the main thread, it is detached before being destroyed.
 	End Rem
 	Method Destroy()
 		bmx_glfw_glfwDestroyWindow(windowPtr)
@@ -157,140 +160,208 @@ Type TGLFWWindow
 	'End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Retrieves the position, in screen coordinates, of the upper-left corner of the content area of the window.
 	End Rem
 	Method GetPos(x:Int Var, y:Int Var)
 		bmx_glfw_glfwGetWindowPos(windowPtr, x, y)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Sets the position, in screen coordinates, of the upper-left corner of the content area of the windowed mode window.
+	about: If the window is a full screen window, this method does nothing.
+
+	Do not use this method to move an already visible window unless you have very good reasons for doing so, as it will confuse and annoy the user.
+
+	The window manager may put limits on what positions are allowed. GLFW cannot and should not override these limits.
 	End Rem
 	Method SetPos(x:Int, y:Int)
 		bmx_glfw_glfwSetWindowPos(windowPtr, x, y)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Retrieves the size, in screen coordinates, of the content area of the window.
+	about: If you wish to retrieve the size of the framebuffer of the window in pixels, see #GetFramebufferSize.
 	End Rem
 	Method GetSize(w:Int Var, h:Int Var)
 		bmx_glfw_glfwGetWindowSize(windowPtr, w, h)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Sets the size limits of the content area of the window.
+	about: If the window is full screen, the size limits only take effect once it is made windowed. If the window is not resizable,
+	this method does nothing.
+
+	The size limits are applied immediately to a windowed mode window and may cause it to be resized.
+
+	The maximum dimensions must be greater than or equal to the minimum dimensions and all must be greater than or equal to zero.
 	End Rem
 	Method SetSizeLimits(minWidth:Int, minHeight:Int, maxWidth:Int, maxHeight:Int)
 		bmx_glfw_glfwSetWindowSizeLimits(windowPtr, minWidth, minHeight, maxWidth, maxHeight)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Sets the required aspect ratio of the content area of the window.
+	about: If the window is full screen, the aspect ratio only takes effect once it is made windowed. If the window is not resizable,
+	this method does nothing.
+
+	The aspect ratio is specified as a numerator and a denominator and both values must be greater than zero. For example, the common 16:9 aspect ratio is specified as 16 and 9, respectively.
+
+	If the numerator and denominator is set to `GLFW_DONT_CARE` then the aspect ratio limit is disabled.
+
+	The aspect ratio is applied immediately to a windowed mode window and may cause it to be resized.
 	End Rem
 	Method SetAspectRatio(numer:Int, denom:Int)
 		bmx_glfw_glfwSetWindowAspectRatio(windowPtr, numer, denom)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Sets the size, in screen coordinates, of the content area of the window.
+	about: For full screen windows, this method updates the resolution of its desired video mode and switches to the video mode closest to it,
+	without affecting the window's context. As the context is unaffected, the bit depths of the framebuffer remain unchanged.
+
+	If you wish to update the refresh rate of the desired video mode in addition to its resolution, see #SetMonitor.
+
+	The window manager may put limits on what sizes are allowed. GLFW cannot and should not override these limits.
 	End Rem
 	Method SetSize(w:Int, h:Int)
 		bmx_glfw_glfwSetWindowSize(windowPtr, w, h)
 	End Method
 
 	Rem
-	bbdoc: 
+	bbdoc: Retrieves the size, in pixels, of the framebuffer of the window.
+	about: If you wish to retrieve the size of the window in screen coordinates, see #GetSize.
 	End Rem
 	Method GetFramebufferSize(width:Int Var, height:Int Var)
 		bmx_glfw_glfwGetFramebufferSize(windowPtr, width, height)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Retrieves the size, in screen coordinates, of each edge of the frame of the window.
+	about: This size includes the title bar, if the window has one. The size of the frame may vary depending on the window-related hints used to create it.
+
+	Because this method retrieves the size of each window frame edge and not the offset along a particular coordinate axis,
+	the retrieved values will always be zero or positive.
 	End Rem
 	Method GetFrameSize(Left:Int Var, top:Int Var, Right:Int Var, bottom:Int Var)
 		bmx_glfw_glfwGetWindowFrameSize(windowPtr, Left, top, Right, bottom)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Retrieves the content scale for the window.
+	about: The content scale is the ratio between the current DPI and the platform's default DPI. This is especially important
+	for text and any UI elements. If the pixel dimensions of your UI scaled by this look appropriate on your machine then it should
+	appear at a reasonable size on other machines regardless of their DPI and scaling settings. This relies on the system DPI and
+	scaling settings being somewhat correct.
+
+	On systems where each monitors can have its own content scale, the window content scale will depend on which monitor
+	the system considers the window to be on.
 	End Rem
 	Method GetContentScale(xscale:Float Var, yscale:Float Var)
 		bmx_glfw_glfwGetWindowContentScale(windowPtr, xscale, yscale)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Returns the opacity of the window, including any decorations.
+	about: The opacity (or alpha) value is a positive finite number between zero and one, where zero is fully transparent
+	and one is fully opaque. If the system does not support whole window transparency, this method always returns one.
+
+	The initial opacity value for newly created windows is one.
 	End Rem
 	Method GetOpacity:Float()
 		Return bmx_glfw_glfwGetWindowOpacity(windowPtr)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Sets the opacity of the window, including any decorations.
+	about: The opacity (or alpha) value is a positive finite number between zero and one, where zero is fully transparent and one is fully opaque.
+
+	The initial opacity value for newly created windows is one.
+
+	A window created with framebuffer transparency may not use whole window transparency. The results of doing this are undefined.
 	End Rem
 	Method SetOpacity(opacity:Float)
 		bmx_glfw_glfwSetWindowOpacity(windowPtr, opacity)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Iconifies (minimizes) the window if it was previously restored.
+	about: If the window is already iconified, this method does nothing.
+
+	If the window is a full screen window, the original monitor resolution is restored until the window is restored.
 	End Rem
 	Method Iconify()
 		bmx_glfw_glfwIconifyWindow(windowPtr)
 	End Method
 	
 	Rem
-	bbdoc: Restores the specified window if it was previously iconified (minimized) or maximized.
+	bbdoc: Restores the window if it was previously iconified (minimized) or maximized.
 	about: If the window is already restored, this method does nothing.
 
-	If the specified window is a full screen window, the resolution chosen for the window is restored on the selected monitor.
+	If the window is a full screen window, the resolution chosen for the window is restored on the selected monitor.
 	End Rem
 	Method Restore()
 		bmx_glfw_glfwRestoreWindow(windowPtr)
 	End Method
 	
 	Rem
-	bbdoc: Maximizes the specified window if it was previously not maximized.
+	bbdoc: Maximizes the window if it was previously not maximized.
 	
 	about: If the window is already maximized, this method does nothing.
 	
-	If the specified window is a full screen window, this method does nothing.
+	If the window is a full screen window, this method does nothing.
 	End Rem
 	Method Maximize()
 		bmx_glfw_glfwMaximizeWindow(windowPtr)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Makes the window visible if it was previously hidden.
+	about: If the window is already visible or is in full screen mode, this method does nothing.
+
+	By default, windowed mode windows are focused when shown Set the GLFW_FOCUS_ON_SHOW window hint to change this behavior
+	for all newly created windows, or change the behavior for an existing window with #SetAttrib.
 	End Rem
 	Method Show()
 		bmx_glfw_glfwShowWindow(windowPtr)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Hides the window if it was previously visible.
+	about: If the window is already hidden or is in full screen mode, this method does nothing.
 	End Rem
 	Method Hide()
 		bmx_glfw_glfwHideWindow(windowPtr)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Brings the window to front and sets input focus.
+	about: The window should already be visible and not iconified.
+
+	By default, both windowed and full screen mode windows are focused when initially created. Set the GLFW_FOCUSED to disable this behavior.
+
+	Also by default, windowed mode windows are focused when shown with #Show. Set the GLFW_FOCUS_ON_SHOW to disable this behavior.
+
+	Do not use this method to steal focus from other applications unless you are certain that is what the user wants.
+	Focus stealing can be extremely disruptive.
+
+	For a less disruptive way of getting the user's attention, see attention requests.
 	End Rem
 	Method Focus()
 		bmx_glfw_glfwFocusWindow(windowPtr)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Requests user attention to the window.
+	about: On platforms where this is not supported, attention is requested to the application as a whole.
+
+	Once the user has given attention, usually by focusing the window or application, the system will end the request automatically.
 	End Rem
 	Method RequestAttention()
 		bmx_glfw_glfwRequestWindowAttention(windowPtr)
 	End Method
 	
 	Rem
-	bbdoc: Returns the monitor that the specified window is in full screen on.
+	bbdoc: Returns the monitor that the window is in full screen on.
 	End Rem
 	Method GetMonitor:TGLFWMonitor()
 		Return TGLFWMonitor._create(bmx_glfw_glfwGetWindowMonitor(windowPtr))
@@ -318,14 +389,19 @@ Type TGLFWWindow
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Returns the value of an attribute of the window or its OpenGL or OpenGL ES context.
 	End Rem
 	Method GetAttrib:Int(attrib:Int)
 		Return bmx_glfw_glfwGetWindowAttrib(windowPtr, attrib)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Sets the value of an attribute of the specified window.
+	about: The supported attributes are GLFW_DECORATED, GLFW_RESIZABLE, GLFW_FLOATING, GLFW_AUTO_ICONIFY and GLFW_FOCUS_ON_SHOW.
+
+	Some of these attributes are ignored for full screen windows. The new value will take effect if the window is later made windowed.
+
+	Some of these attributes are ignored for windowed mode windows. The new value will take effect if the window is later made full screen.
 	End Rem
 	Method SetAttrib(attrib:Int, value:Int)
 		bmx_glfw_glfwSetWindowAttrib(windowPtr, attrib, value)
@@ -339,21 +415,37 @@ Type TGLFWWindow
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Swaps the front and back buffers of the window when rendering with OpenGL or OpenGL ES.
+	about: If the swap interval is greater than zero, the GPU driver waits the specified number of screen updates before swapping the buffers.
+
+	The specified window must have an OpenGL or OpenGL ES context. Specifying a window without a context will generate a GLFW_NO_WINDOW_CONTEXT error.
+
+	This method does not apply to Vulkan. If you are rendering with Vulkan, see vkQueuePresentKHR instead.
 	End Rem
 	Method SwapBuffers()
 		bmx_glfw_glfwSwapBuffers(windowPtr)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Returns the last state reported for the specified key to the window.
+	about: The returned state is one of GLFW_PRESS or GLFW_RELEASE. The higher-level action GLFW_REPEAT is only reported to the key callback.
+
+	If the GLFW_STICKY_KEYS input mode is enabled, this function returns GLFW_PRESS the first time you call it for a key that was pressed,
+	even if that key has already been released.
+
+	The key functions deal with physical keys, with key tokens named after their use on the standard US keyboard layout. If you want
+	to input text, use the Unicode character callback instead.
+
+	The modifier key bit masks are not key tokens and cannot be used with this function.
+
+	Do not use this method to implement text input.
 	End Rem
 	Method GetKey:Int(key:Int)
 		Return bmx_glfw_glfwGetKey(windowPtr, key)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Returns true if the specified key is in a pressed state.
 	End Rem
 	Method IsKeyDown:Int(key:Int)
 		Return bmx_glfw_glfwGetKey(windowPtr, key) <> GLFW_RELEASE
@@ -397,25 +489,25 @@ Type TGLFWWindow
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Called when the window is iconified or restored.
 	End Rem
 	Method OnIconify(iconified:Int)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Called when the window is maximized or restored.
 	End Rem
 	Method OnMaximize(maximized:Int)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Called when the framebuffer is resized.
 	End Rem
 	Method OnFramebufferSize(width:Int, height:Int)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Called when the content scale of the specified window changes.
 	End Rem
 	Method OnContentScale(xScale:Float, yScale:Float)
 	End Method

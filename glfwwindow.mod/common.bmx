@@ -220,3 +220,176 @@ Const GLFW_KEY_RIGHT_SUPER:Int = 347
 Const GLFW_KEY_MENU:Int = 348
 
 Const GLFW_KEY_LAST:Int = GLFW_KEY_MENU
+
+Const GLFW_DONT_CARE:Int = -1
+
+Const GLFW_ARROW_CURSOR:Int = $00036001
+Const GLFW_IBEAM_CURSOR:Int = $00036002
+Const GLFW_CROSSHAIR_CURSOR:Int = $00036003
+Const GLFW_HAND_CURSOR:Int = $00036004
+Const GLFW_HRESIZE_CURSOR:Int = $00036005
+Const GLFW_VRESIZE_CURSOR:Int = $00036006
+
+' window hints
+Rem
+bbdoc: Input focus window hint and attribute.
+End Rem
+Const GLFW_FOCUSED:Int = $00020001
+Rem
+bbdoc: Window iconification window attribute.
+End Rem
+Const GLFW_ICONIFIED:Int = $00020002
+Rem
+bbdoc: Window resize-ability window hint and attribute.
+End Rem
+Const GLFW_RESIZABLE:Int = $00020003
+Rem
+bbdoc: Window visibility window hint and attribute.
+End Rem
+Const GLFW_VISIBLE:Int = $00020004
+Rem
+bbdoc: Window decoration window hint and attribute.
+End Rem
+Const GLFW_DECORATED:Int = $00020005
+Rem
+bbdoc: Window auto-iconification window hint and window attribute.
+End Rem
+Const GLFW_AUTO_ICONIFY:Int = $00020006
+Rem
+bbdoc: Window decoration window hint and window attribute.
+End Rem
+Const GLFW_FLOATING:Int = $00020007
+Rem
+bbdoc: Window maximization window hint and window attribute.
+End Rem
+Const GLFW_MAXIMIZED:Int = $00020008
+Rem
+bbdoc: Cursor centering window hint.
+End Rem
+Const GLFW_CENTER_CURSOR:Int = $00020009
+Rem
+bbdoc: Window framebuffer transparency window hint and window attribute.
+End Rem
+Const GLFW_TRANSPARENT_FRAMEBUFFER:Int = $0002000A
+Rem
+bbdoc: Mouse cursor hover window attribute.
+End Rem
+Const GLFW_HOVERED:Int = $0002000B
+Rem
+bbdoc: Input focus window hint or window attribute.
+End Rem
+Const GLFW_FOCUS_ON_SHOW:Int = $0002000C
+Rem
+bbdoc: Framebuffer bit depth hint.
+End Rem
+Const GLFW_RED_BITS:Int = $00021001
+Rem
+bbdoc: Framebuffer bit depth hint.
+End Rem
+Const GLFW_GREEN_BITS:Int = $00021002
+Rem
+bbdoc: Framebuffer bit depth hint.
+End Rem
+Const GLFW_BLUE_BITS:Int = $00021003
+Rem
+bbdoc: Framebuffer bit depth hint.
+End Rem
+Const GLFW_ALPHA_BITS:Int = $00021004
+Rem
+bbdoc: Framebuffer bit depth hint.
+End Rem
+Const GLFW_DEPTH_BITS:Int = $00021005
+Rem
+bbdoc: Framebuffer bit depth hint.
+End Rem
+Const GLFW_STENCIL_BITS:Int = $00021006
+Rem
+bbdoc: Framebuffer bit depth hint.
+End Rem
+Const GLFW_ACCUM_RED_BITS:Int = $00021007
+Rem
+bbdoc: Framebuffer bit depth hint.
+End Rem
+Const GLFW_ACCUM_GREEN_BITS:Int = $00021008
+Rem
+bbdoc: Framebuffer bit depth hint.
+End Rem
+Const GLFW_ACCUM_BLUE_BITS:Int = $00021009
+Rem
+bbdoc: Framebuffer bit depth hint.
+End Rem
+Const GLFW_ACCUM_ALPHA_BITS:Int = $0002100A
+Rem
+bbdoc: Framebuffer auxiliary buffer hint.
+End Rem
+Const GLFW_AUX_BUFFERS:Int = $0002100B
+Rem
+bbdoc: OpenGL stereoscopic rendering hint.
+End Rem
+Const GLFW_STEREO:Int = $0002100C
+Rem
+bbdoc: Framebuffer MSAA samples hint.
+End Rem
+Const GLFW_SAMPLES:Int = $0002100D
+Rem
+bbdoc: Framebuffer sRGB hint.
+End Rem
+Const GLFW_SRGB_CAPABLE:Int = $0002100E
+Rem
+bbdoc: Monitor refresh rate hint.
+End Rem
+Const GLFW_REFRESH_RATE:Int = $0002100F
+Rem
+bbdoc: Framebuffer double buffering hint.
+End Rem
+Const GLFW_DOUBLEBUFFER:Int = $00021010
+Rem
+bbdoc: Context client API hint and attribute.
+End Rem
+Const GLFW_CLIENT_API:Int = $00022001
+Rem
+bbdoc: Context client API major version hint and attribute.
+End Rem
+Const GLFW_CONTEXT_VERSION_MAJOR:Int = $00022002
+Rem
+bbdoc: Context client API minor version hint and attribute.
+End Rem
+Const GLFW_CONTEXT_VERSION_MINOR:Int = $00022003
+Rem
+bbdoc: Context client API revision number attribute.
+End Rem
+Const GLFW_CONTEXT_REVISION:Int = $00022004
+Rem
+bbdoc: Context client API revision number hint and attribute.
+End Rem
+Const GLFW_CONTEXT_ROBUSTNESS:Int = $00022005
+Rem
+bbdoc: OpenGL forward-compatibility hint and attribute.
+End Rem
+Const GLFW_OPENGL_FORWARD_COMPAT:Int = $00022006
+Rem
+bbdoc: OpenGL debug context hint and attribute.
+End Rem
+Const GLFW_OPENGL_DEBUG_CONTEXT:Int = $00022007
+Rem
+bbdoc: OpenGL profile hint and attribute.
+End Rem
+Const GLFW_OPENGL_PROFILE:Int = $00022008
+Rem
+bbdoc: Context flush-on-release hint and attribute.
+End Rem
+Const GLFW_CONTEXT_RELEASE_BEHAVIOR:Int = $00022009
+Rem
+bbdoc: Context error suppression hint and attribute.
+End Rem
+Const GLFW_CONTEXT_NO_ERROR:Int = $0002200A
+Rem
+bbdoc: Context creation API hint and attribute.
+End Rem
+Const GLFW_CONTEXT_CREATION_API:Int = $0002200B
+Const GLFW_SCALE_TO_MONITOR:Int = $0002200C
+Const GLFW_COCOA_RETINA_FRAMEBUFFER:Int = $00023001
+Const GLFW_COCOA_FRAME_NAME:Int = $00023002
+Const GLFW_COCOA_GRAPHICS_SWITCHING:Int = $00023003
+Const GLFW_X11_CLASS_NAME:Int = $00024001
+Const GLFW_X11_INSTANCE_NAME:Int = $00024002
