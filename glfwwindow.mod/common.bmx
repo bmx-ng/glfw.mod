@@ -62,7 +62,16 @@ Extern
 	Function bmx_glfw_glfwMakeContextCurrent(window:Byte Ptr)="glfwMakeContextCurrent"
 	Function bmx_glfw_glfwSwapBuffers(window:Byte Ptr)="glfwSwapBuffers"
 	
+	Function bmx_glfw_glfwGetInputMode:Int(window:Byte Ptr, Mode:Int)="glfwGetInputMode"
+	Function bmx_glfw_glfwSetInputMode(window:Byte Ptr, Mode:Int, value:Int)="glfwSetInputMode"
 	Function bmx_glfw_glfwGetKey:Int(window:Byte Ptr, key:Int)="glfwGetKey"
+	Function bmx_glfw_glfwGetMouseButton:Int(window:Byte Ptr, button:Int)="glfwGetMouseButton"
+	Function bmx_glfw_glfwGetCursorPos(window:Byte Ptr, x:Double Var, y:Double Var)="glfwGetCursorPos"
+	Function bmx_glfw_glfwSetCursorPos(window:Byte Ptr, x:Double, y:Double)="glfwSetCursorPos"
+
+	Function bmx_glfw_glfwRawMouseMotionSupported:Int()="glfwRawMouseMotionSupported"
+	Function bmx_glfw_glfwGetKeyName:Byte Ptr(key:Int, scancode:Int)="glfwGetKeyName"
+	Function bmx_glfw_glfwGetKeyScancode:Int(key:Int)="glfwGetKeyScancode"
 
 	Function bmx_glfw_glfwSetWindowPosCallback:Byte Ptr(window:Byte Ptr, func(win:Byte Ptr, x:Int, y:Int))="glfwSetWindowPosCallback"
 	Function bmx_glfw_glfwSetWindowSizeCallback:Byte Ptr(window:Byte Ptr, func(win:Byte Ptr, w:Int, h:Int))="glfwSetWindowSizeCallback"

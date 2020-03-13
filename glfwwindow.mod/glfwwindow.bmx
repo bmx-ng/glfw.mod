@@ -29,6 +29,51 @@ Module GLFW.GLFWWindow
 Import "common.bmx"
 
 Rem
+bbdoc: Returns whether raw mouse motion is supported on the current system.
+about: This status does not change after GLFW has been initialized so you only need to check this once.
+If you attempt to enable raw motion on a system that does not support it, GLFW_PLATFORM_ERROR will be emitted.
+
+Raw mouse motion is closer to the actual motion of the mouse across a surface. It is not affected by the scaling
+and acceleration applied to the motion of the desktop cursor. That processing is suitable for a cursor while
+raw motion is better for controlling for example a 3D camera. Because of this, raw mouse motion is only provided
+when the cursor is disabled.
+End Rem
+Function RawMouseMotionSupported:Int()
+	Return bmx_glfw_glfwRawMouseMotionSupported()
+End Function 
+
+Rem
+bbdoc: Returns the name of the specified printable key.
+about: This is typically the character that key would produce without any modifier keys, intended for displaying key
+bindings to the user. For dead keys, it is typically the diacritic it would add to a character.
+
+Do not use this function for text input. You will break text input for many languages even if it happens to work for yours.
+
+If the key is GLFW_KEY_UNKNOWN, the scancode is used to identify the key, otherwise the scancode is ignored.
+If you specify a non-printable key, or GLFW_KEY_UNKNOWN and a scancode that maps to a non-printable key, this
+function returns #Null but does not emit an error.
+
+This behavior allows you to always pass in the arguments in the key callback without modification.
+
+Names for printable keys depend on keyboard layout, while names for non-printable keys are the same across
+layouts but depend on the application language and should be localized along with other user interface text.
+End Rem
+Function GetKeyName:String(key:Int, scancode:Int)
+	Local k:Byte Ptr = bmx_glfw_glfwGetKeyName(key, scancode)
+	If k Then
+		Return String.FromUTF8String(k)
+	End If
+End Function
+
+Rem
+bbdoc: Returns the platform-specific scancode of the specified key.
+about: If the key is GLFW_KEY_UNKNOWN or does not exist on the keyboard this method will return -1.
+End Rem
+Function GetKeyScancode:Int(key:Int)
+	Return bmx_glfw_glfwGetKeyScancode(key)
+End Function
+
+Rem
 bbdoc: A GLFW Window.
 End Rem
 Type TGLFWWindow
@@ -175,7 +220,7 @@ Type TGLFWWindow
 		If pixmaps.length = 0 Then
 			bmx_glfw_glfwSetWindowIcon(windowPtr, 0, Null)
 		Else
-			Local images:SGLFWimage[pixmaps.length]
+			Local images:GLFWimage[pixmaps.length]
 			
 			Local pixs:TPixmap[pixmaps.length] ' cache
 			For Local i:Int = 0 Until pixmaps.length
@@ -185,7 +230,7 @@ Type TGLFWWindow
 				End If
 				pixs[i] = pix
 				
-				images[i] = New SGLFWimage(pix.width, pix.height, pix.pixels)
+				images[i] = New GLFWimage(pix.width, pix.height, pix.pixels)
 			Next
 			
 			bmx_glfw_glfwSetWindowIcon(windowPtr, pixmaps.length, images)
@@ -469,6 +514,52 @@ Type TGLFWWindow
 	End Method
 	
 	Rem
+	bbdoc: Returns true if the specified key is in a pressed state.
+	End Rem
+	Method IsKeyDown:Int(key:Int)
+		Return bmx_glfw_glfwGetKey(windowPtr, key) <> GLFW_RELEASE
+	End Method
+
+	Rem
+	bbdoc: Returns the value of an input option for the window.
+	about: The mode must be one of #GLFW_CURSOR, #GLFW_STICKY_KEYS, #GLFW_STICKY_MOUSE_BUTTONS, #GLFW_LOCK_KEY_MODS or #GLFW_RAW_MOUSE_MOTION.
+	End Rem
+	Method GetInputMode:Int(Mode:Int)
+		Return bmx_glfw_glfwGetInputMode(windowPtr, Mode)
+	End Method
+	
+	Rem
+	bbdoc: Sets an input mode option for the window.
+	about: The mode must be one of #GLFW_CURSOR, #GLFW_STICKY_KEYS, #GLFW_STICKY_MOUSE_BUTTONS, #GLFW_LOCK_KEY_MODS or #GLFW_RAW_MOUSE_MOTION.
+
+	If the mode is #GLFW_CURSOR, the value must be one of the following cursor modes:
+* #GLFW_CURSOR_NORMAL makes the cursor visible and behaving normally.
+* #GLFW_CURSOR_HIDDEN makes the cursor invisible when it is over the content area of the window but does not restrict the cursor from leaving.
+* #GLFW_CURSOR_DISABLED hides and grabs the cursor, providing virtual and unlimited cursor movement. This is useful for implementing for example 3D camera controls.
+
+	If the mode is #GLFW_STICKY_KEYS, the value must be either #True to enable sticky keys, or #False to disable it.
+	If sticky keys are enabled, a key press will ensure that #GetKey returns #GLFW_PRESS the next time it is called even if
+	the key had been released before the call. This is useful when you are only interested in whether keys have been pressed
+	but not when or in which order.
+
+	If the mode is #GLFW_STICKY_MOUSE_BUTTONS, the value must be either #True to enable sticky mouse buttons, or #False to disable it.
+	If sticky mouse buttons are enabled, a mouse button press will ensure that #GetMouseButton returns #GLFW_PRESS the next time
+	it is called even if the mouse button had been released before the call. This is useful when you are only interested in
+	whether mouse buttons have been pressed but not when or in which order.
+
+	If the mode is #GLFW_LOCK_KEY_MODS, the value must be either #True to enable lock key modifier bits, or #False to disable them.
+	If enabled, callbacks that receive modifier bits will also have the #GLFW_MOD_CAPS_LOCK bit set when the event was generated
+	with Caps Lock on, and the #GLFW_MOD_NUM_LOCK bit when Num Lock was on.
+
+	If the mode is #GLFW_RAW_MOUSE_MOTION, the value must be either #True to enable raw (unscaled and unaccelerated) mouse motion when
+	the cursor is disabled, or #False to disable it. If raw motion is not supported, attempting to set this will emit #GLFW_PLATFORM_ERROR.
+	Call #RawMouseMotionSupported to check for support.
+	End Rem
+	Method SetInputMode(Mode:Int, value:Int)
+		bmx_glfw_glfwSetInputMode(windowPtr, Mode, value)
+	End Method
+	
+	Rem
 	bbdoc: Returns the last state reported for the specified key to the window.
 	about: The returned state is one of GLFW_PRESS or GLFW_RELEASE. The higher-level action GLFW_REPEAT is only reported to the key callback.
 
@@ -487,11 +578,43 @@ Type TGLFWWindow
 	End Method
 	
 	Rem
-	bbdoc: Returns true if the specified key is in a pressed state.
+	bbdoc: Returns the last state reported for the specified mouse button to the window.
+	about: The returned state is one of GLFW_PRESS or GLFW_RELEASE.
+
+	If the #GLFW_STICKY_MOUSE_BUTTONS input mode is enabled, this method returns GLFW_PRESS the first time you call it for a mouse button
+	that was pressed, even if that mouse button has already been released.
 	End Rem
-	Method IsKeyDown:Int(key:Int)
-		Return bmx_glfw_glfwGetKey(windowPtr, key) <> GLFW_RELEASE
+	Method GetMouseButton:Int(button:Int)
+		Return bmx_glfw_glfwGetMouseButton(windowPtr, button)
 	End Method
+	
+	Rem
+	bbdoc: Returns the position of the cursor, in screen coordinates, relative to the upper-left corner of the content area of the window.
+	about: If the cursor is disabled (with #GLFW_CURSOR_DISABLED) then the cursor position is unbounded and limited only by the minimum
+	and maximum values of a double.
+
+	The coordinate can be converted to their integer equivalents with the #Floor function. Casting directly to an integer type works
+	for positive coordinates, but fails for negative ones.
+	End Rem
+	Method GetCursorPos(x:Double Var, y:Double Var)
+		bmx_glfw_glfwGetCursorPos(windowPtr, x, y)
+	End Method
+	
+	Rem
+	bbdoc: Sets the position, in screen coordinates, of the cursor relative to the upper-left corner of the content area of the window.
+	about: The window must have input focus. If the window does not have input focus when this method is called, it fails silently.
+
+	Do not use this method to implement things like camera controls. GLFW already provides the #GLFW_CURSOR_DISABLED cursor mode that
+	hides the cursor, transparently re-centers it and provides unconstrained cursor motion. See #SetInputMode for more information.
+
+	If the cursor mode is #GLFW_CURSOR_DISABLED then the cursor position is unconstrained and limited only by the minimum and maximum values of a double.
+	End Rem
+	Method SetCursorPos(x:Double, y:Double)
+		bmx_glfw_glfwSetCursorPos(windowPtr, x, y)
+	End Method
+	
+	'Method SetCursor()
+	'End Method
 	
 	Rem
 	bbdoc: Called when the window position changes.
@@ -555,43 +678,70 @@ Type TGLFWWindow
 	End Method
 
 	Rem
-	bbdoc: 
+	bbdoc: Called when a mouse button is pressed or released.
+	about:  When a window loses input focus, it will generate synthetic mouse button release events for all pressed mouse buttons.
+	You can tell these events from user-generated events by the fact that the synthetic ones are generated after the focus loss
+	event has been processed, i.e. after #OnFocus has been called.
 	End Rem
 	Method OnMouseButton(button:Int, action:Int, mods:Int)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Called when the cursor is moved.
+	about: The callback is provided with the position, in screen coordinates, relative to the upper-left corner of the content area of the window.
 	End Rem
 	Method OnCursorPosition(x:Double, y:Double)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Called when the cursor enters or leaves the content area of the window.
 	End Rem
 	Method OnCursorEnter(entered:Int)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Called when a scrolling device is used, such as a mouse wheel or scrolling area of a touchpad.
+	about: The scroll callback receives all scrolling input, like that from a mouse wheel or a touchpad scrolling area.
 	End Rem
 	Method OnScroll(xOffset:Double, yOffset:Double)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Called when a key is pressed, repeated or released.
+	about: The key functions deal with physical keys, with layout independent key tokens named after their values in the standard
+	US keyboard layout. If you want to input text, use the #OnChar callback instead.
+
+	When a window loses input focus, it will generate synthetic key release events for all pressed keys.
+	You can tell these events from user-generated events by the fact that the synthetic ones are generated after the focus
+	loss event has been processed, i.e. after the window #OnFocus callback has been called.
+
+	The scancode of a key is specific to that platform or sometimes even to that machine. Scancodes are intended to allow
+	users to bind keys that don't have a GLFW key token. Such keys have key set to GLFW_KEY_UNKNOWN, their state is not saved
+	and so it cannot be queried with #GetKey.
+
+	Sometimes GLFW needs to generate synthetic key events, in which case the scancode may be zero.
 	End Rem
 	Method OnKey(key:Int, scancode:Int, action:Int, mods:Int)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Called when a Unicode character is input.
+	about:  The #OnChar callback is intended for Unicode text input. As it deals with characters, it is keyboard
+	layout dependent, whereas the #OnKey callback is not. Characters do not map 1:1 to physical keys, as a key may
+	produce zero, one or more characters. If you want to know whether a specific physical key was pressed or released, see the #OnKey callback instead.
+
+	The #OnChar callback behaves as system text input normally does and will not be called if modifier keys are held down that
+	would prevent normal text input on that platform, for example a Super (Command) key on macOS or Alt key on Windows.
 	End Rem
 	Method OnChar(char:UInt)
 	End Method
 	
 	Rem
-	bbdoc: 
+	bbdoc: Called when a Unicode character is input regardless of what modifier keys are used.
+	about: The #OnCharMods callback is intended for implementing custom Unicode character input.
+	For regular Unicode text input, see the #OnChar callback. Like the #OnChar callback, the #OnCharMods callback deals with characters
+	and is keyboard layout dependent. Characters do not map 1:1 to physical keys, as a key may produce zero, one or more characters.
+	If you want to know whether a specific physical key was pressed or released, see the #OnKey callback instead.
 	End Rem
 	Method OnCharMods(codepoint:UInt, mods:Int)
 	End Method
@@ -688,7 +838,7 @@ bbdoc: Image data.
 about: This describes a single 2D image.
 See the documentation for each related function what the expected pixel format is.
 End Rem
-Struct SGLFWimage
+Struct GLFWimage
 	Rem
 	bbdoc: The width, in pixels, of this image.
 	End Rem
