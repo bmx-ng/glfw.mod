@@ -90,6 +90,12 @@ Extern
 	Function bmx_glfw_glfwSetCharCallback:Byte Ptr(window:Byte Ptr, func(win:Byte Ptr, char:UInt))="glfwSetCharCallback"
 	Function bmx_glfw_glfwSetCharModsCallback:Byte Ptr(window:Byte Ptr, func(win:Byte Ptr, codepoint:UInt, mods:Int))="glfwSetCharModsCallback"
 	
+	Function bmx_glfw_glfwCreateStandardCursor:Byte Ptr(shape:Int)="glfwCreateStandardCursor"
+	Function bmx_glfw_glfwDestroyCursor(cursor:Byte Ptr)="glfwDestroyCursor"
+	Function bmx_glfw_glfwSetCursor(window:Byte Ptr, cursor:Byte Ptr)="glfwSetCursor"
+	Function bmx_glfw_glfwSetClipboardString(window:Byte Ptr, txt:Byte Ptr)="glfwSetClipboardString"
+	Function bmx_glfw_glfwGetClipboardString:Byte Ptr(window:Byte Ptr)="glfwGetClipboardString"
+
 End Extern
 
 Const GLFW_RELEASE:Int = 0
@@ -234,11 +240,29 @@ Const GLFW_KEY_LAST:Int = GLFW_KEY_MENU
 
 Const GLFW_DONT_CARE:Int = -1
 
+Rem
+bbdoc: The regular arrow cursor.
+End Rem
 Const GLFW_ARROW_CURSOR:Int = $00036001
+Rem
+bbdoc: The text input I-beam cursor shape.
+End Rem
 Const GLFW_IBEAM_CURSOR:Int = $00036002
+Rem
+bbdoc: The crosshair shape.
+End Rem
 Const GLFW_CROSSHAIR_CURSOR:Int = $00036003
+Rem
+bbdoc: The hand shape.
+End Rem
 Const GLFW_HAND_CURSOR:Int = $00036004
+Rem
+bbdoc: The horizontal resize arrow shape.
+End Rem
 Const GLFW_HRESIZE_CURSOR:Int = $00036005
+Rem
+bbdoc: The vertical resize arrow shape.
+End Rem
 Const GLFW_VRESIZE_CURSOR:Int = $00036006
 
 ' window hints

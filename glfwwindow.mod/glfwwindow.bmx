@@ -613,8 +613,35 @@ Type TGLFWWindow
 		bmx_glfw_glfwSetCursorPos(windowPtr, x, y)
 	End Method
 	
-	'Method SetCursor()
-	'End Method
+	Rem
+	bbdoc: Sets the cursor image to be used when the cursor is over the content area of the window.
+	about: The set cursor will only be visible when the cursor mode of the window is #GLFW_CURSOR_NORMAL.
+
+	On some platforms, the set cursor may not be visible unless the window also has input focus.
+	End Rem
+	Method SetCursor(cursor:GLFWcursor)
+		bmx_glfw_glfwSetCursor(windowPtr, cursor.cursorPtr)
+	End Method
+
+	Rem
+	bbdoc: Sets the system clipboard to the specified #String.
+	End Rem
+	Method SetClipboard(txt:String)
+		Local t:Byte Ptr = txt.ToUTF8String()
+		bmx_glfw_glfwSetClipboardString(windowPtr, t)
+		MemFree(t)
+	End Method
+	
+	Rem
+	bbdoc: Returns the contents of the system clipboard, if it contains or is convertible to a #String.
+	about: If the clipboard is empty or if its contents cannot be converted, #Null is returned and a #GLFW_FORMAT_UNAVAILABLE error is generated.
+	End Rem
+	Method GetClipboard:String()
+		Local t:Byte Ptr = bmx_glfw_glfwGetClipboardString(windowPtr)
+		If t Then
+			Return String.FromUTF8String(t)
+		End If
+	End Method
 	
 	Rem
 	bbdoc: Called when the window position changes.
@@ -859,9 +886,64 @@ Struct GLFWimage
 	End Method
 End Struct
 
+Rem
+bbdoc: A GLFW cursor
+End Rem
+Struct GLFWcursor
+Private
+	Field cursorPtr:Byte Ptr
+	Field custom:Int
+	
+	Method New(cursorPtr:Byte Ptr, custom:Int)
+		Self.cursorPtr = cursorPtr
+		Self.custom = custom
+	End Method
+Public
+	Rem
+	bbdoc: Creates a new custom cursor image that can be set for a window with #SetCursor.
+	about: The cursor can be destroyed with #Destroy. Any remaining cursors are destroyed on program termination.
+
+	The cursor hotspot is specified in pixels, relative to the upper-left corner of the cursor image.
+	Like all other coordinate systems in GLFW, the X-axis points to the right and the Y-axis points down.
+	End Rem
+	Function Create:GLFWcursor(pix:TPixmap, xhot:Int, yhot:Int)
+		If pix.format <> PF_RGBA8888 Then
+			pix = pix.Convert(PF_RGBA8888)
+		End If
+
+		Local image:GLFWimage = New GLFWimage(pix.width, pix.height, pix.pixels)
+		Local cursor:GLFWcursor = New GLFwcursor(bmx_glfw_glfwCreateCursor(image, xhot, yhot), True)
+		pix = Null
+
+		Return cursor
+	End Function
+
+	Rem
+	bbdoc: Returns a cursor with a standard shape, that can be set for a window with #SetCursor.
+	about: Standard shapes include #GLFW_ARROW_CURSOR, #GLFW_IBEAM_CURSOR, #GLFW_CROSSHAIR_CURSOR, #GLFW_HAND_CURSOR, #GLFW_HRESIZE_CURSOR and #GLFW_VRESIZE_CURSOR.
+	End Rem
+	Function CreateStandard:GLFWcursor(shape:Int)
+		Return New GLFWcursor(bmx_glfw_glfwCreateStandardCursor(shape), False)
+	End Function
+
+	Rem
+	bbdoc: Destroys a cursor previously created with #Create. 
+	about: Any remaining cursors will be destroyed on program termination.
+
+	If the specified cursor is current for any window, that window will be reverted to the default cursor. This does not affect the cursor mode.
+	End Rem
+	Method Destroy()
+		If custom Then
+			bmx_glfw_glfwDestroyCursor(cursorPtr)
+		End If
+	End Method
+	
+End Struct
+
 Private
 
 Extern
 	Function bmx_glfw_glfwGetWindowUserPointer:TGLFWWindow(window:Byte Ptr)="glfwGetWindowUserPointer"
 	Function bmx_glfw_glfwSetWindowUserPointer(window:Byte Ptr, win:TGLFWWindow)="glfwSetWindowUserPointer"
+	Function bmx_glfw_glfwCreateCursor:Byte Ptr(image:GLFWimage Var, xhot:Int, yhot:Int)="glfwCreateCursor"
 End Extern
