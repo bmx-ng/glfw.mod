@@ -31,6 +31,8 @@ Import "source.bmx"
 Extern
 	Function glfwGetProcAddress:Int(name:Byte Ptr)
 	Function glfwSwapInterval(interval:Int)
+	Function bmx_glfw_glfwGetTime:Double()="glfwGetTime"
+	Function bmx_glfw_glfwSetTime(time:Double)="glfwSetTime"
 End Extern
 
 Const GLFW_NO_API:Int = 0

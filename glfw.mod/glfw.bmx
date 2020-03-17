@@ -38,3 +38,23 @@ ModuleInfo "CC_OPTS: -D_GLFW_X11"
 
 
 Import "common.bmx"
+
+
+Rem
+bbdoc: Returns the current GLFW time, in seconds.
+about: Unless the time has been set using #glfwSetTime it measures time elapsed since GLFW was initialized.
+
+The resolution of the timer is system dependent, but is usually on the order of a few micro- or nanoseconds.
+It uses the highest-resolution monotonic time source on each supported platform.
+End Rem
+Function GetTime:Double()
+	Return bmx_glfw_glfwGetTime()
+End Function
+
+Rem
+bbdoc: Sets the current GLFW time, in seconds.
+about: The value must be a positive finite number less than or equal to 18446744073.0, which is approximately 584.5 years.
+End Rem
+Function SetTime(time:Double)
+	bmx_glfw_glfwSetTime(time)
+End Function
