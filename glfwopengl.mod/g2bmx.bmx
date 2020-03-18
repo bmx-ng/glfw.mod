@@ -206,7 +206,9 @@ Type TCodeGenerator
 								Local key$="PFN"+sym[5..].ToUpper()+"PROC"
 								Local val:Tproto=Tproto( funMap.ValueForKey( key ) )
 								If val
-									GenerateApi ( "Global "+id+val.proto+"=~q"+val.exproto.Replace("XXXXXXXX", sym).Trim()+"~q", "GL Global "+id+val.proto )
+									Local prefix:String
+									If id = "glShaderSource" prefix = "_"
+									GenerateApi ( "Global "+prefix+id+val.proto+"=~q"+val.exproto.Replace("XXXXXXXX", sym).Trim()+"~q", "GL Global "+id+val.proto )
 								Else
 									DebugLog "***** "+sym+" *****"
 								EndIf
@@ -466,6 +468,13 @@ Type TCodeGenerator
 		Next
 		
 		WriteLine OutGlad, ""
+		
+		WriteLine OutGlad, "Function glShaderSource(shader_:Int,count_:Int,source:String)"
+		WriteLine OutGlad, "~tLocal s:Byte Ptr = source.ToUTF8String()"
+		WriteLine OutGlad, "~t_glShaderSource(shader_, count_, Varptr s, Null)"
+		WriteLine OutGlad, "~tMemFree s"
+		WriteLine OutGlad, "End Function"
+		
 		'WriteLine OutGlad, "?"
 		
 		OutGlad.Close
