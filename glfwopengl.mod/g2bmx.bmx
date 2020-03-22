@@ -207,7 +207,7 @@ Type TCodeGenerator
 								Local val:Tproto=Tproto( funMap.ValueForKey( key ) )
 								If val
 									Local prefix:String
-									If id = "glShaderSource" prefix = "_"
+									If (id = "glShaderSource" Or id = "glGetShaderInfoLog" Or id = "glGetProgramInfoLog" Or id = "glGetShaderSource" Or id = "glGetUniformLocation") prefix = "_"
 									GenerateApi ( "Global "+prefix+id+val.proto+"=~q"+val.exproto.Replace("XXXXXXXX", sym).Trim()+"~q", "GL Global "+id+val.proto )
 								Else
 									DebugLog "***** "+sym+" *****"
@@ -474,7 +474,42 @@ Type TCodeGenerator
 		WriteLine OutGlad, "~t_glShaderSource(shader_, count_, Varptr s, Null)"
 		WriteLine OutGlad, "~tMemFree s"
 		WriteLine OutGlad, "End Function"
-		
+
+		WriteLine OutGlad, ""
+		WriteLine OutGlad, "Function glGetShaderInfoLog:String(shader:Int)"
+		WriteLine OutGlad, "~tLocal buf:Byte[2048]"
+		WriteLine OutGlad, "~tLocal length:Int"
+		WriteLine OutGlad, "~t_glGetShaderInfoLog(shader, 2048, Null, buf)"
+		WriteLine OutGlad, "~tReturn String.FromUTF8String(buf)"
+		WriteLine OutGlad, "End Function"
+
+		WriteLine OutGlad, ""
+		WriteLine OutGlad, "Function glGetProgramInfoLog:String(program:Int)"
+		WriteLine OutGlad, "~tLocal buf:Byte[2048]"
+		WriteLine OutGlad, "~tLocal length:Int"
+		WriteLine OutGlad, "~t_glGetShaderInfoLog(program, 2048, Null, buf)"
+		WriteLine OutGlad, "~tReturn String.FromUTF8String(buf)"
+		WriteLine OutGlad, "End Function"
+
+		WriteLine OutGlad, ""
+		WriteLine OutGlad, "Function glGetShaderSource:String(shader:Int)"
+		WriteLine OutGlad, "~tLocal length:Int"
+		WriteLine OutGlad, "~tglGetShaderiv(shader, GL_SHADER_SOURCE_LENGTH, Varptr length)"
+		WriteLine OutGlad, "~tIf length Then"
+		WriteLine OutGlad, "~tLocal buf:Byte[length + 1]"
+		WriteLine OutGlad, "~t_glGetShaderSource(shader, length + 1, Null, buf)"
+		WriteLine OutGlad, "~tReturn String.FromUTF8String(buf)"
+		WriteLine OutGlad, "~tEnd If"
+		WriteLine OutGlad, "End Function"
+
+		WriteLine OutGlad, ""
+		WriteLine OutGlad, "Function glGetUniformLocation(program:Int, name:String)"
+		WriteLine OutGlad, "~tLocal n:Byte Ptr = name.ToUTF8String()"
+		WriteLine OutGlad, "~tLocal res:Int = _glGetUniformLocation(program, n)"
+		WriteLine OutGlad, "~tMemFree(n)"
+		WriteLine OutGlad, "~tReturn res"
+		WriteLine OutGlad, "End Function"
+
 		'WriteLine OutGlad, "?"
 		
 		OutGlad.Close

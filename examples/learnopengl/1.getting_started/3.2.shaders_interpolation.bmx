@@ -10,20 +10,23 @@ Import GLFW.GLFWSystem
 
 Import BRL.StandardIO
 
-Local app_name:String = "Shaders Uniform"
+Local app_name:String = "Shaders Interpolation"
 
-' settings
 Const SCR_WIDTH:UInt	= 800
 Const SCR_HEIGHT:UInt	= 600
 
 Type TGameWindow Extends TGLFWWindow
 	
+	' whenever the window size changed (by OS or user resize) this callback method executes
 	Method OnFrameBufferSize (width:Int, height:Int)
+		' make sure the viewport matches the new window dimensions; note that width and 
+		' height will be significantly larger than specified on retina displays.
 		glViewport (0, 0, width, height)
 	EndMethod
 	
 EndType
 
+' process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 Function ProcessInput (window:TGLFWWindow)
 	
 	If window.IsKeyDown (GLFW_KEY_ESCAPE)
@@ -32,7 +35,7 @@ Function ProcessInput (window:TGLFWWindow)
 	
 EndFunction
 
-' initialize and configure
+' glfw: initialize and configure
 TGLFWWindow.Hint (GLFW_CONTEXT_VERSION_MAJOR, 3)
 TGLFWWindow.Hint (GLFW_CONTEXT_VERSION_MINOR, 3)
 TGLFWWindow.Hint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
@@ -55,25 +58,20 @@ window.MakeContextCurrent ()
 gladLoadGL (glfwGetProcAddress)
 
 ' build and compile our shader program
+
 Local vertexShaderSource:String
 
 vertexShaderSource :+ "#version 330 core~n"
 vertexShaderSource :+ "layout (location = 0) in vec3 aPos;~n"
+vertexShaderSource :+ "layout (location = 1) in vec3 aColor;~n"
+vertexShaderSource :+ "out vec3 ourColor;~n"
 vertexShaderSource :+ "void main()~n"
 vertexShaderSource :+ "{~n"
 vertexShaderSource :+ "   gl_Position = vec4(aPos, 1.0);~n"
+vertexShaderSource :+ "   ourColor = aColor;~n"
 vertexShaderSource :+ "}~n"
 
-Local fragmentShaderSource:String
-
-fragmentShaderSource :+ "#version 330 core~n"
-fragmentShaderSource :+ "out vec4 FragColor;~n"
-fragmentShaderSource :+ "uniform vec4 ourColor;~n"
-fragmentShaderSource :+ "void main()~n"
-fragmentShaderSource :+ "{~n"
-fragmentShaderSource :+ "   FragColor = ourColor;~n"
-fragmentShaderSource :+ "}~n"
-
+' vertex shader
 Local vertexShader:Int = glCreateShader (GL_VERTEX_SHADER)
 
 glShaderSource (vertexShader, 1, vertexShaderSource)
@@ -85,19 +83,31 @@ Local infoLog:String
 glGetShaderiv (vertexShader, GL_COMPILE_STATUS, Varptr success)
 
 If Not success
-	infoLog = glGetShaderInfoLog (vertexShader)
+	infoLog = glGetShaderInfoLog(vertexShader)
 	Print "Vertex shader compilation failed: " + infoLog
 EndIf
 
+Local fragmentShaderSource:String
+
+fragmentShaderSource :+ "#version 330 core~n"
+fragmentShaderSource :+ "out vec4 FragColor;~n"
+fragmentShaderSource :+ "in vec3 ourColor;~n"
+fragmentShaderSource :+ "void main()~n"
+fragmentShaderSource :+ "{~n"
+fragmentShaderSource :+ "   FragColor = vec4(ourColor, 1.0f);~n"
+fragmentShaderSource :+ "}~n"
+
+' fragment shader
 Local fragmentShader:Int = glCreateShader (GL_FRAGMENT_SHADER)
 
 glShaderSource (fragmentShader, 1, fragmentShaderSource)
 glCompileShader (fragmentShader)
 
+' check for shader compile errors
 glGetShaderiv (fragmentShader, GL_COMPILE_STATUS, Varptr success)
 
 If Not success
-	infoLog = glGetShaderInfoLog (fragmentShader)
+	infoLog = glGetShaderInfoLog(fragmentShader)
 	Print "Fragment shader compilation failed: " + infoLog
 EndIf
 
@@ -106,8 +116,10 @@ Local shaderProgram:Int = glCreateProgram ()
 
 glAttachShader (shaderProgram, vertexShader)
 glAttachShader (shaderProgram, fragmentShader)
+
 glLinkProgram (shaderProgram)
 
+' check for linking errors
 glGetProgramiv (shaderProgram, GL_LINK_STATUS, Varptr success)
 
 If Not success
@@ -120,9 +132,9 @@ glDeleteShader (fragmentShader)
 
 ' set up vertex data (and buffer(s)) and configure vertex attributes
 Local vertices:Float [] = [..
-	0.5, -0.5, 0.0, ..
-	-0.5, -0.5, 0.0, ..
-	0.0, 0.5, 0.0]
+	0.5, -0.5, 0.0, 1.0, 0.0, 0.0, ..
+	-0.5, -0.5, 0.0, 0.0, 1.0, 0.0, ..
+	0.0, 0.5, 0.0, 0.0, 0.0, 1.0]
 
 Local VBO:UInt
 Local VAO:UInt
@@ -136,14 +148,21 @@ glBindVertexArray (VAO)
 glBindBuffer (GL_ARRAY_BUFFER, VBO)
 glBufferData (GL_ARRAY_BUFFER, vertices.length * SizeOf (0:Float), vertices, GL_STATIC_DRAW)
 
-glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 3 * SizeOf (0:Float), 0:Byte Ptr)
+' position attribute
+glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 6 * SizeOf (0:Float), 0:Byte Ptr)
 glEnableVertexAttribArray (0)
 
-' bind the VAO (it was already bound, but just to demonstrate): seeing as we only have a single VAO we can
-' just bind it beforehand before rendering the respective triangle; this is another approach.
+Local attribute_offset:Int = 3 * SizeOf (0:Float)
 
-glBindVertexArray (VAO)
+' color attribute
+glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, 6 * SizeOf (0:Float), Byte Ptr (attribute_offset))
+glEnableVertexAttribArray (1)
 
+' as we only have a single shader, we could also just activate our shader once beforehand if we want to 
+glUseProgram (shaderProgram)
+
+' render loop
+' -----------
 While Not window.ShouldClose ()
 	
 	' input
@@ -155,20 +174,11 @@ While Not window.ShouldClose ()
 	glClearColor (0.2, 0.3, 0.3, 1.0)
 	glClear (GL_COLOR_BUFFER_BIT)
 	
-	' be sure to activate the shader before any calls to glUniform
-	glUseProgram (shaderProgram)
-
-	' update shader uniform
-	Local timeValue:Float = GetTime()
-	Local greenValue:Float = Sin (timeValue * 57.2958) / 2.0 + 0.5
-
-	Local vertexColorLocation:Int = glGetUniformLocation (shaderProgram, "ourColor")
-	glUniform4f (vertexColorLocation, 0.0, greenValue, 0.0, 1.0)
-
 	' render the triangle
+	glBindVertexArray (VAO)
 	glDrawArrays (GL_TRIANGLES, 0, 3)
 
-	' swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+	' glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 	window.SwapBuffers ()
 	PollSystem ()
 	
