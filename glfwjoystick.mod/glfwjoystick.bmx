@@ -130,3 +130,45 @@ End Rem
 Function SetJoystickCallback(func(id:Int, event:Int))
 	bmx_glfw_glfwSetJoystickCallback(func)
 End Function
+
+Rem
+bbdoc: Retrieves the state of the specified joystick remapped to an Xbox-like gamepad.
+about: If the specified joystick is not present or does not have a gamepad mapping this function will return #False
+but will not generate an error. Call #JoystickPresent to check whether it is present regardless of whether it has a mapping.
+
+The Guide button may not be available for input as it is often hooked by the system or the Steam client.
+
+Not all devices have all the buttons or axes provided by #GLFWgamepadstate. Unavailable buttons and axes will always report GLFW_RELEASE and 0.0 respectively.
+End Rem
+Function GetGamepadState:Int(id:Int, state:GLFWgamepadstate Var)
+	Return bmx_glfw_glfwGetGamepadState(id, state)
+End Function
+
+Rem
+bbdoc: parses the specified #String and updates the internal list with any gamepad mappings it finds.
+returns: #True if successful, or #False if an error occurred.
+about: This string may contain either a single gamepad mapping or many mappings separated by newlines. The parser supports the full format
+of the gamecontrollerdb.txt source file including empty lines and comments.
+
+See <a href="https://www.glfw.org/docs/latest/input_guide.html#gamepad_mapping">Gamepad mappings</a> for a description of the format.
+
+If there is already a gamepad mapping for a given GUID in the internal list, it will be replaced by the one passed to this function.
+If the library is terminated and re-initialized the internal list will revert to the built-in default.
+End Rem
+Function UpdateGamepadMappings:Int(txt:String)
+	Local t:Byte Ptr = txt.ToUTF8String()
+	Local res:Int = bmx_glfw_glfwUpdateGamepadMappings(t)
+	MemFree(t)
+End Function
+
+Rem
+bbdoc: Returns the human-readable name of the gamepad from the gamepad mapping assigned to the specified joystick.
+about: If the specified joystick is not present or does not have a gamepad mapping this function will return NULL but will not generate an error.
+Call #JoystickPresent to check whether it is present regardless of whether it has a mapping.
+End Rem
+Function GetGamepadName:String(id:Int)
+	Local n:Byte Ptr = bmx_glfw_glfwGetGamepadName(id)
+	If n Then
+		Return String.FromUTF8String(n)
+	End If
+End Function

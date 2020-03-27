@@ -32,6 +32,10 @@ Extern
 	Function bmx_glfw_glfwGetJoystickGUID:Byte Ptr(id:Int)="glfwGetJoystickGUID"
 	Function bmx_glfw_glfwJoystickIsGamepad:Int(id:Int)="glfwJoystickIsGamepad"
 	Function bmx_glfw_glfwSetJoystickCallback(func(id:Int, event:Int))="glfwSetJoystickCallback"
+	
+	Function bmx_glfw_glfwGetGamepadState:Int(id:Int, state:GLFWgamepadstate Var)="glfwGetGamepadState"
+	Function bmx_glfw_glfwUpdateGamepadMappings:Int(txt:Byte Ptr)="glfwUpdateGamepadMappings"
+	Function bmx_glfw_glfwGetGamepadName:Byte Ptr(id:Int)="glfwGetGamepadName"
 End Extern
 
 Const GLFW_JOYSTICK_1:Int = 0
@@ -52,3 +56,17 @@ Const GLFW_JOYSTICK_15:Int = 14
 Const GLFW_JOYSTICK_16:Int = 15
 Const GLFW_JOYSTICK_LAST:Int = GLFW_JOYSTICK_16
 
+
+Rem
+bbdoc: Describes the input state of a gamepad.
+End Rem
+Struct GLFWgamepadstate
+	Rem
+	bbdoc: The states of each gamepad button, #GLFW_PRESS or #GLFW_RELEASE.
+	End Rem
+	Field StaticArray buttons:Byte[15]
+	Rem
+	bbdoc: The states of each gamepad axis, in the range -1.0 to 1.0 inclusive.
+	End Rem
+	Field StaticArray axes:Float[6]
+End Struct
