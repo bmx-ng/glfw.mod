@@ -624,26 +624,6 @@ Type TGLFWWindow
 	End Method
 
 	Rem
-	bbdoc: Sets the system clipboard to the specified #String.
-	End Rem
-	Method SetClipboard(txt:String)
-		Local t:Byte Ptr = txt.ToUTF8String()
-		bmx_glfw_glfwSetClipboardString(windowPtr, t)
-		MemFree(t)
-	End Method
-	
-	Rem
-	bbdoc: Returns the contents of the system clipboard, if it contains or is convertible to a #String.
-	about: If the clipboard is empty or if its contents cannot be converted, #Null is returned and a #GLFW_FORMAT_UNAVAILABLE error is generated.
-	End Rem
-	Method GetClipboard:String()
-		Local t:Byte Ptr = bmx_glfw_glfwGetClipboardString(windowPtr)
-		If t Then
-			Return String.FromUTF8String(t)
-		End If
-	End Method
-	
-	Rem
 	bbdoc: Called when the window position changes.
 	End Rem
 	Method OnPosition(x:Int, y:Int)

@@ -58,3 +58,24 @@ End Rem
 Function SetTime(time:Double)
 	bmx_glfw_glfwSetTime(time)
 End Function
+
+Rem
+bbdoc: Sets the system clipboard to the specified #String.
+End Rem
+Function SetClipboard(txt:String)
+	Local t:Byte Ptr = txt.ToUTF8String()
+	bmx_glfw_glfwSetClipboardString(Null, t)
+	MemFree(t)
+End Function
+
+Rem
+bbdoc: Returns the contents of the system clipboard, if it contains or is convertible to a #String.
+about: If the clipboard is empty or if its contents cannot be converted, #Null is returned and a #GLFW_FORMAT_UNAVAILABLE error is generated.
+End Rem
+Function GetClipboard:String()
+	Local t:Byte Ptr = bmx_glfw_glfwGetClipboardString(Null)
+	If t Then
+		Return String.FromUTF8String(t)
+	End If
+End Function
+

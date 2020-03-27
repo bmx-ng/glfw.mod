@@ -33,6 +33,10 @@ Extern
 	Function glfwSwapInterval(interval:Int)
 	Function bmx_glfw_glfwGetTime:Double()="glfwGetTime"
 	Function bmx_glfw_glfwSetTime(time:Double)="glfwSetTime"
+
+	Function bmx_glfw_glfwSetClipboardString(window:Byte Ptr, txt:Byte Ptr)="glfwSetClipboardString"
+	Function bmx_glfw_glfwGetClipboardString:Byte Ptr(window:Byte Ptr)="glfwGetClipboardString"
+
 End Extern
 
 Const GLFW_NO_API:Int = 0

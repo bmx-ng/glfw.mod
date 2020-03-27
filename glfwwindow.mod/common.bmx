@@ -93,8 +93,6 @@ Extern
 	Function bmx_glfw_glfwCreateStandardCursor:Byte Ptr(shape:Int)="glfwCreateStandardCursor"
 	Function bmx_glfw_glfwDestroyCursor(cursor:Byte Ptr)="glfwDestroyCursor"
 	Function bmx_glfw_glfwSetCursor(window:Byte Ptr, cursor:Byte Ptr)="glfwSetCursor"
-	Function bmx_glfw_glfwSetClipboardString(window:Byte Ptr, txt:Byte Ptr)="glfwSetClipboardString"
-	Function bmx_glfw_glfwGetClipboardString:Byte Ptr(window:Byte Ptr)="glfwGetClipboardString"
 
 End Extern
 
