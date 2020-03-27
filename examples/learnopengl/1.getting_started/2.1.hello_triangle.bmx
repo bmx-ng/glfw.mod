@@ -83,13 +83,13 @@ glShaderSource (vertexShader, 1, vertexShaderSource)
 glCompileShader (vertexShader)
 
 Local success:Int
-Local infoLog:Byte [512]
+Local infoLog:String
 
 ' check for shader compile errors
 glGetShaderiv (vertexShader, GL_COMPILE_STATUS, Varptr success)
 
 If Not success
-	glGetShaderInfoLog (vertexShader, 512, Null, infoLog)
+	infoLog = glGetShaderInfoLog (vertexShader )
 	Print "Vertex shader compilation failed: " + String.FromCString (infoLog)
 EndIf
 
@@ -102,7 +102,7 @@ glCompileShader (fragmentShader)
 glGetShaderiv (fragmentShader, GL_COMPILE_STATUS, Varptr success)
 
 If Not success
-	glGetShaderInfoLog (fragmentShader, 512, Null, infoLog)
+	infoLog = glGetShaderInfoLog (fragmentShader)
 	Print "Fragment shader compilation failed: " + String.FromCString (infoLog)
 EndIf
 
@@ -117,7 +117,7 @@ glLinkProgram (shaderProgram)
 glGetProgramiv (shaderProgram, GL_LINK_STATUS, Varptr success)
 
 If Not success
-	glGetProgramInfoLog (shaderProgram, 512, Null, infoLog)
+	infoLog = glGetProgramInfoLog (shaderProgram)
 	Print "Shader program linking failed: " + String.FromCString (infoLog)
 EndIf
 
