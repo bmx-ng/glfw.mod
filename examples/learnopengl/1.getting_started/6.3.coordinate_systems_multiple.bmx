@@ -13,7 +13,7 @@ Import BRL.JpgLoader
 Import BRL.PngLoader
 Import BRL.StandardIO
 
-Local app_name:String = "Textures Combined"
+Local app_name:String = "Coordinate Systems Multiple"
 
 Const SCR_WIDTH:UInt	= 800
 Const SCR_HEIGHT:UInt	= 600
@@ -60,27 +60,75 @@ window.MakeContextCurrent ()
 ' glad: load all OpenGL function pointers
 gladLoadGL (glfwGetProcAddress)
 
+' configure global opengl state
+glEnable(GL_DEPTH_TEST)
+
 ' build and compile our shader program
-Local ourShader:TShader = New TShader("4.2.texture.vs", "4.2.texture.fs")
+Local ourShader:TShader = New TShader("6.3.coordinate_systems.vs", "6.3.coordinate_systems.fs")
 
 ' set up vertex data (and buffer(s)) and configure vertex attributes
 Local vertices:Float [] = [..
-	 0.5,  0.5, 0.0,   1.0, 0.0, 0.0,   1.0, 1.0, ..
-	 0.5, -0.5, 0.0,   0.0, 1.0, 0.0,   1.0, 0.0, ..
-	-0.5, -0.5, 0.0,   0.0, 0.0, 1.0,   0.0, 0.0, ..
-	-0.5,  0.5, 0.0,   1.0, 1.0, 0.0,   0.0, 1.0]
+	-0.5, -0.5, -0.5,  0.0, 0.0, ..
+	 0.5, -0.5, -0.5,  1.0, 0.0, ..
+	 0.5,  0.5, -0.5,  1.0, 1.0, ..
+	 0.5,  0.5, -0.5,  1.0, 1.0, ..
+	-0.5,  0.5, -0.5,  0.0, 1.0, ..
+	-0.5, -0.5, -0.5,  0.0, 0.0, ..
+	 ..
+	-0.5, -0.5,  0.5,  0.0, 0.0, ..
+	 0.5, -0.5,  0.5,  1.0, 0.0, ..
+	 0.5,  0.5,  0.5,  1.0, 1.0, ..
+	 0.5,  0.5,  0.5,  1.0, 1.0, ..
+	-0.5,  0.5,  0.5,  0.0, 1.0, ..
+	-0.5, -0.5,  0.5,  0.0, 0.0, ..
+	 ..
+	-0.5,  0.5,  0.5,  1.0, 0.0, ..
+	-0.5,  0.5, -0.5,  1.0, 1.0, ..
+	-0.5, -0.5, -0.5,  0.0, 1.0, ..
+	-0.5, -0.5, -0.5,  0.0, 1.0, ..
+	-0.5, -0.5,  0.5,  0.0, 0.0, ..
+	-0.5,  0.5,  0.5,  1.0, 0.0, ..
+	 ..
+	 0.5,  0.5,  0.5,  1.0, 0.0, ..
+	 0.5,  0.5, -0.5,  1.0, 1.0, ..
+	 0.5, -0.5, -0.5,  0.0, 1.0, ..
+	 0.5, -0.5, -0.5,  0.0, 1.0, ..
+	 0.5, -0.5,  0.5,  0.0, 0.0, ..
+	 0.5,  0.5,  0.5,  1.0, 0.0, ..
+	 ..
+	-0.5, -0.5, -0.5,  0.0, 1.0, ..
+	 0.5, -0.5, -0.5,  1.0, 1.0, ..
+	 0.5, -0.5,  0.5,  1.0, 0.0, ..
+	 0.5, -0.5,  0.5,  1.0, 0.0, ..
+	-0.5, -0.5,  0.5,  0.0, 0.0, ..
+	-0.5, -0.5, -0.5,  0.0, 1.0, ..
+	 ..
+	-0.5,  0.5, -0.5,  0.0, 1.0, ..
+	 0.5,  0.5, -0.5,  1.0, 1.0, ..
+	 0.5,  0.5,  0.5,  1.0, 0.0, ..
+	 0.5,  0.5,  0.5,  1.0, 0.0, ..
+	-0.5,  0.5,  0.5,  0.0, 0.0, ..
+	-0.5,  0.5, -0.5,  0.0, 1.0]
 
-Local indices:Int[] = [..
-	0, 1, 3, ..
-	1, 2, 3 ]
+' world space positions of our cubes
+Local cubePositions:SVec3F[] = [ ..
+	New SVec3F( 0.0,  0.0,  0.0), ..
+	New SVec3F( 2.0,  5.0, -15.0), ..
+	New SVec3F(-1.5, -2.2, -2.5), ..
+	New SVec3F(-3.8, -2.0, -12.3), ..
+	New SVec3F( 2.4, -0.4, -3.5), ..
+	New SVec3F(-1.7,  3.0, -7.5), ..
+	New SVec3F( 1.3, -2.0, -2.5), ..
+	New SVec3F( 1.5,  2.0, -2.5), ..
+	New SVec3F( 1.5,  0.2, -1.5), ..
+	New SVec3F(-1.3,  1.0, -1.5) ..
+]
 
 Local VBO:UInt
 Local VAO:UInt
-Local EBO:UInt
 
 glGenVertexArrays (1, Varptr VAO)
 glGenBuffers (1, Varptr VBO)
-glGenBuffers (1, Varptr EBO)
 
 ' bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 glBindVertexArray (VAO)
@@ -88,24 +136,15 @@ glBindVertexArray (VAO)
 glBindBuffer (GL_ARRAY_BUFFER, VBO)
 glBufferData (GL_ARRAY_BUFFER, vertices.length * SizeOf (0:Float), vertices, GL_STATIC_DRAW)
 
-glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, EBO)
-glBufferData (GL_ELEMENT_ARRAY_BUFFER, indices.length * SizeOf (0:Int), indices, GL_STATIC_DRAW)
-
 ' position attribute
-glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 8 * SizeOf (0:Float), 0:Byte Ptr)
+glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 5 * SizeOf (0:Float), 0:Byte Ptr)
 glEnableVertexAttribArray (0)
 
 Local attribute_offset:Int = 3 * SizeOf (0:Float)
 
-' color attribute
-glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, 8 * SizeOf (0:Float), Byte Ptr (attribute_offset))
-glEnableVertexAttribArray (1)
-
-attribute_offset:Int = 6 * SizeOf (0:Float)
-
 ' texture coord attribute
-glVertexAttribPointer (2, 2, GL_FLOAT, GL_FALSE, 8 * SizeOf (0:Float), Byte Ptr (attribute_offset))
-glEnableVertexAttribArray (2)
+glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 5 * SizeOf (0:Float), Byte Ptr (attribute_offset))
+glEnableVertexAttribArray (1)
 
 ' load and create a texture
 ' -------------------------
@@ -164,11 +203,8 @@ pixmap = Null
 
 ' tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
 ourShader.use()
-' either set it manually like so
-glUniform1i(glGetUniformLocation(ourShader.id, "texture1"), 0)
-' or set it via the texture class
+ourShader.setInt("texture1", 0)
 ourShader.setInt("texture2", 1)
-
 
 ' render loop
 ' -----------
@@ -181,7 +217,7 @@ While Not window.ShouldClose ()
 	' render
 	' ------
 	glClearColor (0.2, 0.3, 0.3, 1.0)
-	glClear (GL_COLOR_BUFFER_BIT)
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) ' also clear the depth buffer now!
 	
 	' bind textures on corresponding texture units
 	glActiveTexture(GL_TEXTURE0)
@@ -189,10 +225,34 @@ While Not window.ShouldClose ()
 	glActiveTexture(GL_TEXTURE1)
 	glBindTexture(GL_TEXTURE_2D, texture2)
 	
-	' render container
+	' activate shader
 	ourShader.use()
+	
+	' create transformations
+	Local view:SMat4F = SMat4F.Identity()
+	
+	view = view.Translate(New SVec3F(0.0, 0.0, -3.0))
+	Local projection:SMat4F = SMat4F.Perspective(45.0, SCR_WIDTH, SCR_HEIGHT, 0.1, 100.0)
+	
+	' note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+	ourShader.setMat4("projection", projection)
+	ourShader.setMat4("view", view)
+	
+	' render boxes
 	glBindVertexArray (VAO)
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0)
+	
+	For Local i:Int = 0 Until 10
+		' calculate the model matrix for each object and pass it to shader before drawing
+		Local model:SMat4F = SMat4F.Identity()
+		model = model.Translate(cubePositions[i])
+		Local angle:Float = 20.0 * i
+		
+		model = model.Rotate(New SVec3F(1.0, 0.3, 0.5), angle)
+		ourShader.setMat4("model", model)
+		
+		glDrawArrays(GL_TRIANGLES, 0, 36)
+	Next
+	
 
 	' glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 	window.SwapBuffers ()
@@ -203,6 +263,5 @@ Wend
 ' optional: de-allocate all resources once they've outlived their purpose
 glDeleteVertexArrays (1, Varptr VAO)
 glDeleteBuffers (1, Varptr VBO)
-glDeleteBuffers (1, Varptr EBO)
 
 End

@@ -10,9 +10,10 @@ Import GLFW.GLFWOpenGL
 Import GLFW.GLFWSystem
 
 Import BRL.JpgLoader
+Import BRL.PngLoader
 Import BRL.StandardIO
 
-Local app_name:String = "Textures"
+Local app_name:String = "Coordinate Systems"
 
 Const SCR_WIDTH:UInt	= 800
 Const SCR_HEIGHT:UInt	= 600
@@ -60,14 +61,14 @@ window.MakeContextCurrent ()
 gladLoadGL (glfwGetProcAddress)
 
 ' build and compile our shader program
-Local ourShader:TShader = New TShader("4.1.texture.vs", "4.1.texture.fs")
+Local ourShader:TShader = New TShader("6.1.coordinate_systems.vs", "6.1.coordinate_systems.fs")
 
 ' set up vertex data (and buffer(s)) and configure vertex attributes
 Local vertices:Float [] = [..
-	 0.5,  0.5, 0.0,   1.0, 0.0, 0.0,   1.0, 1.0, ..
-	 0.5, -0.5, 0.0,   0.0, 1.0, 0.0,   1.0, 0.0, ..
-	-0.5, -0.5, 0.0,   0.0, 0.0, 1.0,   0.0, 0.0, ..
-	-0.5,  0.5, 0.0,   1.0, 1.0, 0.0,   0.0, 1.0]
+	 0.5,  0.5, 0.0,   1.0, 1.0, ..
+	 0.5, -0.5, 0.0,   1.0, 0.0, ..
+	-0.5, -0.5, 0.0,   0.0, 0.0, ..
+	-0.5,  0.5, 0.0,   0.0, 1.0]
 
 Local indices:Int[] = [..
 	0, 1, 3, ..
@@ -91,27 +92,24 @@ glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, EBO)
 glBufferData (GL_ELEMENT_ARRAY_BUFFER, indices.length * SizeOf (0:Int), indices, GL_STATIC_DRAW)
 
 ' position attribute
-glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 8 * SizeOf (0:Float), 0:Byte Ptr)
+glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 5 * SizeOf (0:Float), 0:Byte Ptr)
 glEnableVertexAttribArray (0)
 
 Local attribute_offset:Int = 3 * SizeOf (0:Float)
 
-' color attribute
-glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, 8 * SizeOf (0:Float), Byte Ptr (attribute_offset))
-glEnableVertexAttribArray (1)
-
-attribute_offset:Int = 6 * SizeOf (0:Float)
-
 ' texture coord attribute
-glVertexAttribPointer (2, 2, GL_FLOAT, GL_FALSE, 8 * SizeOf (0:Float), Byte Ptr (attribute_offset))
-glEnableVertexAttribArray (2)
+glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 5 * SizeOf (0:Float), Byte Ptr (attribute_offset))
+glEnableVertexAttribArray (1)
 
 ' load and create a texture
 ' -------------------------
-Local texture:UInt
+Local texture1:UInt
+Local texture2:UInt
 
-glGenTextures(1, Varptr texture)
-glBindTexture(GL_TEXTURE_2D, texture)
+' texture 1
+' ---------
+glGenTextures(1, Varptr texture1)
+glBindTexture(GL_TEXTURE_2D, texture1)
 
 ' set the texture wrapping parameters
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
@@ -124,6 +122,7 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 ' load image, create texture and generate mipmaps
 Local pixmap:TPixmap = LoadPixmap("../resources/textures/container.jpg")
 If pixmap Then
+	pixmap = YFlipPixmap(pixmap)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pixmap.width, pixmap.height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixmap.pixels)
 	glGenerateMipmap(GL_TEXTURE_2D)
 Else
@@ -131,7 +130,36 @@ Else
 	End
 End If
 
+' texture 2
+' ---------
+glGenTextures(1, Varptr texture2)
+glBindTexture(GL_TEXTURE_2D, texture2)
+
+' set the texture wrapping parameters
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+
+' set texture filtering parameters
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+
+' load image, create texture and generate mipmaps
+pixmap = LoadPixmap("../resources/textures/awesomeface.png")
+If pixmap Then
+	pixmap = YFlipPixmap(pixmap)
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pixmap.width, pixmap.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixmap.pixels)
+	glGenerateMipmap(GL_TEXTURE_2D)
+Else
+	Print "Failed to load texture"
+	End
+End If
+
 pixmap = Null
+
+' tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
+ourShader.use()
+ourShader.setInt("texture1", 0)
+ourShader.setInt("texture2", 1)
 
 ' render loop
 ' -----------
@@ -146,11 +174,35 @@ While Not window.ShouldClose ()
 	glClearColor (0.2, 0.3, 0.3, 1.0)
 	glClear (GL_COLOR_BUFFER_BIT)
 	
-	' bind Texture
-	glBindTexture(GL_TEXTURE_2D, texture)
+	' bind textures on corresponding texture units
+	glActiveTexture(GL_TEXTURE0)
+	glBindTexture(GL_TEXTURE_2D, texture1)
+	glActiveTexture(GL_TEXTURE1)
+	glBindTexture(GL_TEXTURE_2D, texture2)
+	
+	' activate shader
+	ourShader.use()
+	
+	' create transformations
+	Local model:SMat4F = SMat4F.Identity()
+	Local view:SMat4F = SMat4F.Identity()
+	
+	model = model.Rotate(New SVec3F(1.0, 0.0, 0.0), -55.0)
+	view = view.Translate(New SVec3F(0.0, 0.0, -3.0))
+	Local projection:SMat4F = SMat4F.Perspective(45.0, Float(SCR_WIDTH), SCR_HEIGHT, 0.1, 100.0)
+	
+	' retrieve the matrix uniform locations
+	Local modelLoc:Int = glGetUniformLocation(ourShader.ID, "model")
+	Local viewLoc:Int  = glGetUniformLocation(ourShader.ID, "view")
+	
+	' pass them to the shaders (3 different ways)
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, Varptr model.a)
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, Varptr view.a)
+	
+	' note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+	ourShader.setMat4("projection", projection)
 	
 	' render container
-	ourShader.use()
 	glBindVertexArray (VAO)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0)
 
