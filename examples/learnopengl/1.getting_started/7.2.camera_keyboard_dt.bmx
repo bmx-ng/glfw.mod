@@ -87,7 +87,7 @@ gladLoadGL (glfwGetProcAddress)
 glEnable(GL_DEPTH_TEST)
 
 ' build and compile our shader program
-Local ourShader:TShader = New TShader("6.3.coordinate_systems.vs", "6.3.coordinate_systems.fs")
+Local ourShader:TShader = New TShader("7.2.camera.vs", "7.2.camera.fs")
 
 ' set up vertex data (and buffer(s)) and configure vertex attributes
 Local vertices:Float [] = [..
