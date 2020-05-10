@@ -24,6 +24,8 @@ SuperStrict
 ?linux
 Import "-ldl"
 Import "-lX11"
+?macos
+Import "-framework IOKit"
 ?
 
 Import "source.bmx"

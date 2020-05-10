@@ -25,7 +25,12 @@ Import "glfw/include/*.h"
 Import "glfw/deps/*.h"
 
 ?macos
+Import "glfw/src/cocoa_init.m"
+Import "glfw/src/cocoa_joystick.m"
+Import "glfw/src/cocoa_monitor.m"
 Import "glfw/src/cocoa_time.c"
+Import "glfw/src/cocoa_window.m"
+Import "glfw/src/nsgl_context.m"
 ?
 Import "glfw/src/context.c"
 Import "glfw/src/egl_context.c"
@@ -36,6 +41,7 @@ Import "glfw/src/init.c"
 Import "glfw/src/input.c"
 ?linux
 Import "glfw/src/linux_joystick.c"
+Import "glfw/src/posix_time.c"
 ?
 Import "glfw/src/monitor.c"
 'Import "glfw/src/null_init.c"
@@ -45,7 +51,6 @@ Import "glfw/src/monitor.c"
 Import "glfw/src/osmesa_context.c"
 ?linux Or macos
 Import "glfw/src/posix_thread.c"
-Import "glfw/src/posix_time.c"
 ?
 Import "glfw/src/vulkan.c"
 ?win32

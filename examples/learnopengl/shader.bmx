@@ -4,6 +4,12 @@ Import GLFW.GLFWOpenGL
 Import BRL.Matrix
 Import BRL.StandardIO
 
+?Not macos
+	Const PATH_PREFIX:String
+?macos
+	Const PATH_PREFIX:String = "../../../"
+?
+
 Type TShader
 
 	Field id:Int
@@ -15,12 +21,14 @@ Type TShader
 		Local geometryCode:String
 		
 		Try
-			vertexCode = LoadText(vertexPath)
-			fragmentCode = LoadText(fragmentPath)
+			vertexCode = LoadText(PATH_PREFIX + vertexPath)
+			fragmentCode = LoadText(PATH_PREFIX + fragmentPath)
 			If geometryPath Then
-				geometryCode = LoadText(geometryPath)
+				geometryCode = LoadText(PATH_PREFIX + geometryPath)
 			End If
 		Catch e:TStreamReadException
+		Print vertexPath
+		Print CurrentDir()
 			Print "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ"
 		End Try
 		

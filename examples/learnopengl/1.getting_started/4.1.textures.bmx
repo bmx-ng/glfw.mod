@@ -122,7 +122,7 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 
 ' load image, create texture and generate mipmaps
-Local pixmap:TPixmap = LoadPixmap("../resources/textures/container.jpg")
+Local pixmap:TPixmap = LoadPixmap(PATH_PREFIX + "../resources/textures/container.jpg")
 If pixmap Then
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pixmap.width, pixmap.height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixmap.pixels)
 	glGenerateMipmap(GL_TEXTURE_2D)
