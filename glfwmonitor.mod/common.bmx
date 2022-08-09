@@ -1,4 +1,4 @@
-' Copyright (c) 2020 Bruce A Henderson
+' Copyright (c) 2022 Bruce A Henderson
 '
 ' This software is provided 'as-is', without any express or implied
 ' warranty. In no event will the authors be held liable for any damages
@@ -31,5 +31,6 @@ Extern
 	Function bmx_glfw_glfwGetMonitorPhysicalSize(monitor:Byte Ptr, widthMM:Int Var, heightMM:Int Var)="glfwGetMonitorPhysicalSize"
 	Function bmx_glfw_glfwGetMonitorContentScale(monitor:Byte Ptr, xscale:Float Var, yscale:Float Var)="glfwGetMonitorContentScale"
 	Function bmx_glfw_glfwGetMonitorName:Byte Ptr(monitor:Byte Ptr)="glfwGetMonitorName"
+	Function bmx_glfw_glfwSetMonitorCallback(cb(monitor:Byte Ptr, event:Int))="glfwSetMonitorCallback"
 
 End Extern

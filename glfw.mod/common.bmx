@@ -1,4 +1,4 @@
-' Copyright (c) 2020 Bruce A Henderson
+' Copyright (c) 2022 Bruce A Henderson
 '
 ' This software is provided 'as-is', without any express or implied
 ' warranty. In no event will the authors be held liable for any damages
@@ -70,3 +70,9 @@ Const GLFW_RELEASE_BEHAVIOR_NONE:Int = $00035002
 Const GLFW_NATIVE_CONTEXT_API:Int = $00036001
 Const GLFW_EGL_CONTEXT_API:Int = $00036002
 Const GLFW_OSMESA_CONTEXT_API:Int = $00036003
+
+Const GLFW_CONNECTED:Int = $00040001
+Const GLFW_DISCONNECTED:Int = $00040002
+
+Const GLFW_RELEASE:Int = 0
+Const GLFW_PRESS:Int = 1

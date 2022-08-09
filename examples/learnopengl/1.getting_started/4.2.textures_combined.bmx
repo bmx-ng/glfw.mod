@@ -86,25 +86,25 @@ glGenBuffers (1, Varptr EBO)
 glBindVertexArray (VAO)
 
 glBindBuffer (GL_ARRAY_BUFFER, VBO)
-glBufferData (GL_ARRAY_BUFFER, vertices.length * SizeOf (0:Float), vertices, GL_STATIC_DRAW)
+glBufferData (GL_ARRAY_BUFFER, Int(vertices.length * SizeOf (0:Float)), vertices, GL_STATIC_DRAW)
 
 glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, EBO)
-glBufferData (GL_ELEMENT_ARRAY_BUFFER, indices.length * SizeOf (0:Int), indices, GL_STATIC_DRAW)
+glBufferData (GL_ELEMENT_ARRAY_BUFFER, Int(indices.length * SizeOf (0:Int)), indices, GL_STATIC_DRAW)
 
 ' position attribute
-glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 8 * SizeOf (0:Float), 0:Byte Ptr)
+glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, Int(8 * SizeOf (0:Float)), 0:Byte Ptr)
 glEnableVertexAttribArray (0)
 
 Local attribute_offset:Int = 3 * SizeOf (0:Float)
 
 ' color attribute
-glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, 8 * SizeOf (0:Float), Byte Ptr (attribute_offset))
+glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, Int(8 * SizeOf (0:Float)), Byte Ptr (attribute_offset))
 glEnableVertexAttribArray (1)
 
 attribute_offset:Int = 6 * SizeOf (0:Float)
 
 ' texture coord attribute
-glVertexAttribPointer (2, 2, GL_FLOAT, GL_FALSE, 8 * SizeOf (0:Float), Byte Ptr (attribute_offset))
+glVertexAttribPointer (2, 2, GL_FLOAT, GL_FALSE, Int(8 * SizeOf (0:Float)), Byte Ptr (attribute_offset))
 glEnableVertexAttribArray (2)
 
 ' load and create a texture

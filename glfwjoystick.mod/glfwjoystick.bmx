@@ -1,4 +1,4 @@
-' Copyright (c) 2020 Bruce A Henderson
+' Copyright (c) 2022 Bruce A Henderson
 '
 ' This software is provided 'as-is', without any express or implied
 ' warranty. In no event will the authors be held liable for any damages
@@ -25,6 +25,7 @@ Rem
 bbdoc: GLFW Joystick
 End Rem
 Module GLFW.GLFWJoystick
+Import Pub.Joystick
 
 Import "common.bmx"
 
@@ -159,6 +160,7 @@ Function UpdateGamepadMappings:Int(txt:String)
 	Local t:Byte Ptr = txt.ToUTF8String()
 	Local res:Int = bmx_glfw_glfwUpdateGamepadMappings(t)
 	MemFree(t)
+	Return res
 End Function
 
 Rem
@@ -172,3 +174,167 @@ Function GetGamepadName:String(id:Int)
 		Return String.FromUTF8String(n)
 	End If
 End Function
+
+Private
+Global _hatPositions:Float[] = [-1, 0, 0.25, 0.125, 0.5, -1, 0.375, -1, 0.75, 0.875]
+Public
+
+Type TGLFWJoystickDriver Extends TJoystickDriver
+	
+	Field currentPort:Int = -1
+
+	Field axisCount:Int
+	Field axes:Float Ptr
+
+	Field buttonCount:Int
+	Field buttons:Byte Ptr
+
+	Field hatCount:Int
+	Field hats:Byte Ptr
+
+	Method GetName:String() Override
+		Return "GLFW Joystick"
+	End Method
+
+	Method JoyCount:Int() Override
+		
+	End Method
+	
+	Method JoyName:String(port:Int) Override
+		Return String.FromUTF8String(bmx_glfw_glfwGetJoystickName(port))
+	End Method
+	
+	Method JoyButtonCaps:Int(port:Int) Override
+		SampleJoy port
+		Return buttonCount
+	End Method
+	
+	Method JoyAxisCaps:Int(port:Int) Override
+		SampleJoy port
+		Return axisCount
+	End Method
+	
+	Method JoyDown:Int( button:Int, port:Int=0 ) Override
+		SampleJoy port
+		Return buttons[button]
+	End Method
+	
+	Method JoyHit:Int( button:Int, port:Int=0 ) Override
+	End Method
+	
+	Method JoyX#( port:Int=0 ) Override
+		SampleJoy port
+		Return axes[JOY_X]/32767.0
+	End Method
+	
+	Method JoyY#( port:Int=0 ) Override
+		SampleJoy port
+		Return axes[JOY_Y]/32767.0
+	End Method
+	
+	Method JoyZ#( port:Int=0 ) Override
+		SampleJoy port
+		Return axes[JOY_Z]/32767.0
+	End Method
+	
+	Method JoyR#( port:Int=0 ) Override
+		SampleJoy port
+		Return axes[JOY_R]/32767.0
+	End Method
+	
+	Method JoyU#( port:Int=0 ) Override
+		SampleJoy port
+		Return axes[JOY_U]/32767.0
+	End Method
+	
+	Method JoyV#( port:Int=0 ) Override
+		SampleJoy port
+		Return axes[JOY_V]/32767.0
+	End Method
+	
+	Method JoyYaw#( port:Int=0 ) Override
+		SampleJoy port
+		Return axes[JOY_YAW]/32767.0
+	End Method
+	
+	Method JoyPitch#( port:Int=0 ) Override
+		SampleJoy port
+		Return axes[JOY_PITCH]/32767.0
+	End Method
+	
+	Method JoyRoll#( port:Int=0 ) Override
+		SampleJoy port
+		Return axes[JOY_ROLL]/32767.0
+	End Method
+	
+	Method JoyHat#( port:Int=0 ) Override
+		SampleJoy port
+		Return _hatPositions[hats[0]]
+	End Method
+	
+	Method JoyWheel#( port:Int=0 ) Override
+	End Method
+	
+	Method JoyType:Int( port:Int=0 ) Override
+		If port<JoyCount() Return 1
+		Return 0
+	End Method
+	
+	Method JoyXDir:Int( port:Int=0 ) Override
+		Local t#=JoyX( port )
+		If t<.333333 Return -1
+		If t>.333333 Return 1
+		Return 0
+	End Method
+
+	Method JoyYDir:Int( port:Int=0 ) Override
+		Local t#=JoyY( port )
+		If t<.333333 Return -1
+		If t>.333333 Return 1
+		Return 0
+	End Method
+
+	Method JoyZDir:Int( port:Int=0 ) Override
+		Local t#=JoyZ( port )
+		If t<.333333 Return -1
+		If t>.333333 Return 1
+		Return 0
+	End Method
+
+	Method JoyUDir:Int( port:Int=0 ) Override
+		Local t#=JoyU( port )
+		If t<.333333 Return -1
+		If t>.333333 Return 1
+		Return 0
+	End Method
+
+	Method JoyVDir:Int( port:Int=0 ) Override
+		Local t#=JoyV( port )
+		If t<.333333 Return -1
+		If t>.333333 Return 1
+		Return 0
+	End Method
+	
+	Method FlushJoy( port_mask:Int=~0 ) Override
+		' TODO ?
+	End Method
+	
+	Method SampleJoy(port:Int)
+		If currentPort = port Then
+			Return
+		End If
+		
+		axes = bmx_glfw_glfwGetJoystickAxes(currentPort, axisCount)
+		buttons = bmx_glfw_glfwGetJoystickButtons(currentPort, buttonCount)
+		hats = bmx_glfw_glfwGetJoystickHats(currentPort, hatCount)
+
+		currentPort = port
+	End Method
+	
+End Type
+
+' init driver
+New TGLFWJoystickDriver
+
+' make ourself the default
+GetJoystickDriver("GLFW Joystick")

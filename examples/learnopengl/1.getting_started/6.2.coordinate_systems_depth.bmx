@@ -120,16 +120,16 @@ glGenBuffers (1, Varptr VBO)
 glBindVertexArray (VAO)
 
 glBindBuffer (GL_ARRAY_BUFFER, VBO)
-glBufferData (GL_ARRAY_BUFFER, vertices.length * SizeOf (0:Float), vertices, GL_STATIC_DRAW)
+glBufferData (GL_ARRAY_BUFFER, Int(vertices.length * SizeOf (0:Float)), vertices, GL_STATIC_DRAW)
 
 ' position attribute
-glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 5 * SizeOf (0:Float), 0:Byte Ptr)
+glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, Int(5 * SizeOf (0:Float)), 0:Byte Ptr)
 glEnableVertexAttribArray (0)
 
 Local attribute_offset:Int = 3 * SizeOf (0:Float)
 
 ' texture coord attribute
-glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 5 * SizeOf (0:Float), Byte Ptr (attribute_offset))
+glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, Int(5 * SizeOf (0:Float)), Byte Ptr (attribute_offset))
 glEnableVertexAttribArray (1)
 
 ' load and create a texture

@@ -1,4 +1,4 @@
-' Copyright (c) 2020 Bruce A Henderson
+' Copyright (c) 2022 Bruce A Henderson
 '
 ' This software is provided 'as-is', without any express or implied
 ' warranty. In no event will the authors be held liable for any damages
@@ -77,16 +77,16 @@ Type TGLFWSystemDriver Extends TSystemDriver
 		' TODO
 	End Method
 
-	Method DesktopWidth:Int() Override
+	Method DesktopWidth:Int(display:Int = 0) Override
 	End Method
 	
-	Method DesktopHeight:Int() Override
+	Method DesktopHeight:Int(display:Int = 0) Override
 	End Method
 	
-	Method DesktopDepth:Int() Override
+	Method DesktopDepth:Int(display:Int = 0) Override
 	End Method
 	
-	Method DesktopHertz:Int() Override
+	Method DesktopHertz:Int(display:Int = 0) Override
 	End Method
 
 	Method Name:String() Override

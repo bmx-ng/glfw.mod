@@ -1,4 +1,4 @@
-' Copyright (c) 2020 Bruce A Henderson
+' Copyright (c) 2022 Bruce A Henderson
 '
 ' This software is provided 'as-is', without any express or implied
 ' warranty. In no event will the authors be held liable for any damages
@@ -56,6 +56,15 @@ Const GLFW_JOYSTICK_15:Int = 14
 Const GLFW_JOYSTICK_16:Int = 15
 Const GLFW_JOYSTICK_LAST:Int = GLFW_JOYSTICK_16
 
+Const GLFW_HAT_CENTERED:Int = 0
+Const GLFW_HAT_UP:Int = 1
+Const GLFW_HAT_RIGHT:Int = 2
+Const GLFW_HAT_DOWN:Int = 4
+Const GLFW_HAT_LEFT:Int = 8
+Const GLFW_HAT_RIGHT_UP:Int = (GLFW_HAT_RIGHT | GLFW_HAT_UP)
+Const GLFW_HAT_RIGHT_DOWN:Int = (GLFW_HAT_RIGHT | GLFW_HAT_DOWN)
+Const GLFW_HAT_LEFT_UP:Int = (GLFW_HAT_LEFT  | GLFW_HAT_UP)
+Const GLFW_HAT_LEFT_DOWN:Int = (GLFW_HAT_LEFT  | GLFW_HAT_DOWN)
 
 Rem
 bbdoc: Describes the input state of a gamepad.

@@ -1,4 +1,4 @@
-' Copyright (c) 2020 Bruce A Henderson
+' Copyright (c) 2022 Bruce A Henderson
 '
 ' This software is provided 'as-is', without any express or implied
 ' warranty. In no event will the authors be held liable for any damages
@@ -892,7 +892,7 @@ Public
 		End If
 
 		Local image:GLFWimage = New GLFWimage(pix.width, pix.height, pix.pixels)
-		Local cursor:GLFWcursor = New GLFwcursor(bmx_glfw_glfwCreateCursor(image, xhot, yhot), True)
+		Local cursor:GLFWcursor = New GLFWcursor(bmx_glfw_glfwCreateCursor(image, xhot, yhot), True)
 		pix = Null
 
 		Return cursor

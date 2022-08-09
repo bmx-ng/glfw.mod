@@ -1,4 +1,4 @@
-' Copyright (c) 2020 Bruce A Henderson
+' Copyright (c) 2022 Bruce A Henderson
 '
 ' This software is provided 'as-is', without any express or implied
 ' warranty. In no event will the authors be held liable for any damages
@@ -39,6 +39,11 @@ ModuleInfo "CC_OPTS: -D_GLFW_X11"
 
 Import "common.bmx"
 
+' Notes :
+'  Changed include in deps/glad/gl.h from
+'      #include <glad/khrplatform.h>
+'  to
+'      #include <glfw.mod/glfw.mod/glfw/deps/glad/khrplatform.h>
 
 Rem
 bbdoc: Returns the current GLFW time, in seconds.

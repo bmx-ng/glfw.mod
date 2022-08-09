@@ -170,10 +170,10 @@ glGenBuffers (1, Varptr VBO)
 glBindVertexArray (cubeVAO)
 
 glBindBuffer (GL_ARRAY_BUFFER, VBO)
-glBufferData (GL_ARRAY_BUFFER, vertices.length * SizeOf (0:Float), vertices, GL_STATIC_DRAW)
+glBufferData (GL_ARRAY_BUFFER, Int(vertices.length * SizeOf (0:Float)), vertices, GL_STATIC_DRAW)
 
 ' position attribute
-glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 3 * SizeOf (0:Float), 0:Byte Ptr)
+glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, Int(3 * SizeOf (0:Float)), 0:Byte Ptr)
 glEnableVertexAttribArray (0)
 
 ' second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
@@ -184,7 +184,7 @@ glBindVertexArray(lightVAO)
 ' we only need to bind to the VBO (to link it with glVertexAttribPointer), no need to fill it; the VBO's data already contains all we need (it's already bound, but we do it again for educational purposes)
 glBindBuffer (GL_ARRAY_BUFFER, VBO)
 
-glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 3 * SizeOf (0:Float), 0:Byte Ptr)
+glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, Int(3 * SizeOf (0:Float)), 0:Byte Ptr)
 glEnableVertexAttribArray (0)
 
 

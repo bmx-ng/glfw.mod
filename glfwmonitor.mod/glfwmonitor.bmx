@@ -1,4 +1,4 @@
-' Copyright (c) 2020 Bruce A Henderson
+' Copyright (c) 2022 Bruce A Henderson
 '
 ' This software is provided 'as-is', without any express or implied
 ' warranty. In no event will the authors be held liable for any damages
@@ -34,6 +34,8 @@ End Rem
 Type TGLFWMonitor
 
 	Field monitorPtr:Byte Ptr
+
+	Global monitorCallback(monitor:TGLFWMonitor, event:Int)
 
 	Function _create:TGLFWMonitor(monitorPtr:Byte Ptr)
 		If monitorPtr Then
@@ -171,6 +173,23 @@ Type TGLFWMonitor
 		bmx_glfw_glfwSetGammaRamp(monitorPtr, Varptr ramp)
 	End Method
 	
+	Rem
+	bbdoc: Sets the monitor configuration callback, or removes the currently set callback.
+	about: This is called when a monitor is connected to or disconnected from the system.
+	End Rem
+	Method SetMonitorCallback(callback(monitor:TGLFWMonitor, event:Int))
+		monitorCallback = callback
+		If callback = Null Then
+			bmx_glfw_glfwSetMonitorCallback(Null)
+		Else
+			bmx_glfw_glfwSetMonitorCallback(_monitorCallback)
+		End If
+	End Method
+
+	Function _monitorCallback(handle:Byte Ptr, event:Int)
+		monitorCallback(_create(handle), event)
+	End Function
+
 End Type
 
 Rem

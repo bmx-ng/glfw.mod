@@ -170,16 +170,16 @@ glGenBuffers (1, Varptr VBO)
 glBindVertexArray (cubeVAO)
 
 glBindBuffer (GL_ARRAY_BUFFER, VBO)
-glBufferData (GL_ARRAY_BUFFER, vertices.length * SizeOf (0:Float), vertices, GL_STATIC_DRAW)
+glBufferData (GL_ARRAY_BUFFER, Int(vertices.length * SizeOf (0:Float)), vertices, GL_STATIC_DRAW)
 
 ' position attribute
-glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 6 * SizeOf (0:Float), 0:Byte Ptr)
+glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, Int(6 * SizeOf (0:Float)), 0:Byte Ptr)
 glEnableVertexAttribArray (0)
 
 Local attribute_offset:Int = 3 * SizeOf (0:Float)
 
 ' normal attribute
-glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, 6 * SizeOf (0:Float), Byte Ptr (attribute_offset))
+glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, Int(6 * SizeOf (0:Float)), Byte Ptr (attribute_offset))
 glEnableVertexAttribArray (1)
 
 ' second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
@@ -189,7 +189,7 @@ glBindVertexArray(lightVAO)
 
 glBindBuffer (GL_ARRAY_BUFFER, VBO)
 ' note that we update the lamp's position attribute's stride to reflect the updated buffer data
-glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 6 * SizeOf (0:Float), 0:Byte Ptr)
+glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, Int(6 * SizeOf (0:Float)), 0:Byte Ptr)
 glEnableVertexAttribArray (0)
 
 

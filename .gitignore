@@ -7,3 +7,4 @@
 
 glfwopengl.mod/_out_/
 *.app
+.DS_Store
